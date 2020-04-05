@@ -1,16 +1,3 @@
-Metadata-Version: 1.1
-Name: wizardwebssh
-Version: 1.5.2
-Summary: Web based ssh client
-Home-page: https://gitlab.com/mikeramsey/wizardwebssh
-Author: Michael Ramsey
-Author-email: mike@hackerdise.me
-License: MIT
-Description: WizardWebSSH
-        ------
-        
-        |Build Status| |codecov| |PyPI - Python Version| |PyPI|
-        
         Introduction
         ~~~~~~~~~~~~
         
@@ -244,24 +231,3 @@ Description: WizardWebSSH
            file("~/.ssh/known\_hosts") and the application host keys
            file("./known\_hosts") in order, if the ssh server's hostname is not
            found or the key is not matched, the connection will be aborted.
-        
-        .. |Build Status| image:: https://travis-ci.org/mikeramsey/wizardwebssh.svg?branch=master
-           :target: https://travis-ci.org/mikeramsey/wizardwebssh
-        .. |codecov| image:: https://gitlab.com/mikeramsey/wizardwebssh/branch/master/graph/badge.svg
-           :target: https://codecov.io/gh/mikeramsey/wizardwebssh
-        .. |PyPI - Python Version| image:: https://img.shields.io/pypi/pyversions/wizardwebssh.svg
-        .. |PyPI| image:: https://img.shields.io/pypi/v/webssh.svg
-        .. |Login| image:: https://gitlab.com/mikeramsey/wizardwebssh/raw/master/preview/login.png
-        .. |Terminal| image:: https://gitlab.com/mikeramsey/wizardwebssh/raw/master/preview/terminal.png
-        
-        
-Platform: UNKNOWN
-Classifier: Programming Language :: Python
-Classifier: Programming Language :: Python :: 2
-Classifier: Programming Language :: Python :: 2.7
-Classifier: Programming Language :: Python :: 3
-Classifier: Programming Language :: Python :: 3.4
-Classifier: Programming Language :: Python :: 3.5
-Classifier: Programming Language :: Python :: 3.6
-Classifier: Programming Language :: Python :: 3.7
-Classifier: Programming Language :: Python :: 3.8
