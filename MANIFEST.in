@@ -1,0 +1,13 @@
+include LICENSE
+
+recursive-include tests *
+prune tests/__pycache__
+prune tests/.pytest_cache
+
+recursive-include wizardwebssh *
+prune wizardwebssh/__pycache__
+prune wizardwebssh/.pytest_cache
+
+global-exclude *.pyc
+global-exclude *.log
+global-exclude .coverage
