@@ -12,6 +12,7 @@ setup(
     version=version,
     description='Web based ssh client',
     long_description=long_description,
+    long_description_content_type='text/x-rst',
     author='Michael Ramsey',
     author_email='mike@hackerdise.me',
     url='https://gitlab.com/mikeramsey/wizardwebssh',

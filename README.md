@@ -1,7 +1,5 @@
 ## WebSSH
 
-[![Build Status](https://travis-ci.org/huashengdun/wizardwebssh.svg?branch=master)](https://travis-ci.org/huashengdun/wizardwebssh)
-[![codecov](https://codecov.io/gh/huashengdun/wizardwebssh/branch/master/graph/badge.svg)](https://codecov.io/gh/huashengdun/wizardwebssh)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/wizardwebssh.svg)
 ![PyPI](https://img.shields.io/pypi/v/wizardwebssh.svg)
 
@@ -14,6 +12,9 @@ A simple web application to be used as an ssh client to connect to your ssh serv
 
 * SSH password authentication supported, including empty password.
 * SSH public-key authentication supported, including DSA RSA ECDSA Ed25519 keys.
+* SSH Agent Support
+* Sqlite DB support for SSH Config.
+* PyQT5 MultiTabbed Terminal Widget for embedding into PyQT5 apps.
 * Encrypted keys supported.
 * Two-Factor Authentication (time-based one-time password) supported.
 * Fullscreen terminal supported.
@@ -24,8 +25,8 @@ A simple web application to be used as an ssh client to connect to your ssh serv
 
 ### Preview
 
-![Login](https://github.com/huashengdun/wizardwebssh/raw/master/preview/login.png)
-![Terminal](https://github.com/huashengdun/wizardwebssh/raw/master/preview/terminal.png)
+![Login](https://gitlab.com/mikeramsey/wizardwebssh/-/raw/master/preview/login.png)
+![Terminal](https://gitlab.com/mikeramsey/wizardwebssh/-/raw/master/preview/terminal.png)
 
 
 ### How it works

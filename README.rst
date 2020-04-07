@@ -1,5 +1,5 @@
 WizardWebSSH
-------
+------------
 
 |Build Status| |codecov| |PyPI - Python Version| |PyPI|
 
@@ -18,6 +18,7 @@ Features
    Ed25519 keys.
 -  SSH Agent Support
 -  Sqlite DB support for SSH Config.
+-  PyQT5 MultiTabbed Terminal Widget for embedding into PyQT5 apps.
 -  Encrypted keys supported.
 -  Two-Factor Authentication (time-based one-time password) supported.
 -  Fullscreen terminal supported.
