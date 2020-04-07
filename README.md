@@ -27,6 +27,7 @@ A simple web application to be used as an ssh client to connect to your ssh serv
 
 ![Login](https://gitlab.com/mikeramsey/wizardwebssh/-/raw/master/preview/login.png)
 ![Terminal](https://gitlab.com/mikeramsey/wizardwebssh/-/raw/master/preview/terminal.png)
+![PyQT5 MultiTabbed Terminal Widget](https://gitlab.com/mikeramsey/wizardwebssh/-/raw/master/preview/multitabbedterminalwidget.png)
 
 
 ### How it works

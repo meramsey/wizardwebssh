@@ -246,4 +246,5 @@ Tips
 .. |PyPI| image:: https://img.shields.io/pypi/v/wizardwebssh.svg
 .. |Login| image:: https://gitlab.com/mikeramsey/wizardwebssh/raw/master/preview/login.png
 .. |Terminal| image:: https://gitlab.com/mikeramsey/wizardwebssh/raw/master/preview/terminal.png
+.. |PyQT5 MultiTabbed Terminal Widget| image:: https://gitlab.com/mikeramsey/wizardwebssh/-/raw/master/preview/multitabbedterminalwidget.png
 
