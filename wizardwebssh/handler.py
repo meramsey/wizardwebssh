@@ -2,6 +2,8 @@ import io
 import json
 import logging
 import os
+import sys
+import platform
 import socket
 import struct
 import traceback
@@ -41,8 +43,6 @@ priority = 0
 swallow_http_errors = True
 redirecting = None
 
-target_db = os.path.expanduser("../wizardassistant.db")
-
 ssh_id = ''
 ssh_priority = ''
 ssh_connection_name = ''
@@ -57,10 +57,31 @@ ssh_port = ''
 ssh_proxy_command = ''
 ssh_public_key_file = ''
 ssh_private_key_file = ''
+target_db = ''
 
+# Platforms
+WINDOWS = (platform.system() == "Windows")
+LINUX = (platform.system() == "Linux")
+MAC = (platform.system() == "Darwin")
+
+platform = platform.system()
+
+
+print(str(platform))
+
+try:
+    if platform == 'Windows':
+        target_db = (os.path.abspath(os.path.dirname(sys.argv[0])) + "\\" + "wizardassistant.db")
+
+    if platform == 'Linux':
+        target_db = (os.path.abspath(os.path.dirname(sys.argv[0])) + "/" + "wizardassistant.db")
+except:
+    pass
+
+print('target_db expected path: ' + target_db)
 
 def default_ssh_connection(priority):
-    global ssh_id, ssh_priority, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_public_key_file, ssh_private_key_file
+    global target_db, ssh_id, ssh_priority, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_public_key_file, ssh_private_key_file
     try:
         sqliteConnection = sqlite3.connect(target_db)
         cursor = sqliteConnection.cursor()
@@ -141,9 +162,12 @@ class SSHClient(paramiko.SSHClient):
         two_factor_types = {'keyboard-interactive', 'password'}
 
         agent = paramiko.Agent()
-        agent_keys = agent.get_keys()
-        if len(agent_keys) == 0:
-            return
+        try:
+            agent_keys = agent.get_keys()
+            # if len(agent_keys) == 0:
+            # return
+        except:
+            pass
 
         for key in agent_keys:
             logging.info("Trying ssh-agent key %s" % hexlify(key.get_fingerprint()))
@@ -547,7 +571,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         logging.info('Connecting to {}:{}'.format(*dst_addr))
 
         try:
-            ssh.connect(*args, allow_agent=True, look_for_keys=True, timeout=options.timeout)
+            ssh.connect(*args, allow_agent=options.allow_agent, look_for_keys=options.look_for_keys, timeout=options.timeout)
         except socket.error:
             raise ValueError('Unable to connect to {}:{}'.format(*dst_addr))
         except paramiko.BadAuthenticationType:
@@ -683,4 +707,3 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
         worker = self.worker_ref() if self.worker_ref else None
         if worker:
             worker.close(reason=self.close_reason)
-

@@ -30,7 +30,7 @@ Features
 Preview
 ~~~~~~~
 
-|Login| |Terminal|
+|Login| |Terminal| |PyQT5 MultiTabbed Terminal Widget|
 
 How it works
 ~~~~~~~~~~~~
