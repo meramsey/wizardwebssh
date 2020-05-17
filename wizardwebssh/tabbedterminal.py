@@ -1,8 +1,22 @@
-from PySide2.QtCore import QUrl
-from PySide2.QtGui import QIcon
-from PySide2.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
-from PySide2.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog
-from PySide2 import QtPrintSupport
+import sys
+
+if 'PyQt5' in sys.modules:
+    # PyQt5
+    from PyQt5 import QtGui, QtWidgets, QtCore
+    from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot
+    from PyQt5.QtCore import QUrl
+    from PyQt5.QtGui import QIcon
+    from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
+    from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog
+    from PyQt5 import QtPrintSupport
+
+else:
+    # PySide2
+    from PySide2.QtCore import QUrl
+    from PySide2.QtGui import QIcon
+    from PySide2.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
+    from PySide2.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog
+    from PySide2 import QtPrintSupport
 
 import os
 import sys
