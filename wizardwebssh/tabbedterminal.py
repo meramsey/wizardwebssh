@@ -7,7 +7,7 @@ if 'PyQt5' in sys.modules:
     from PyQt5.QtCore import QUrl
     from PyQt5.QtGui import QIcon
     from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
-    from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog
+    from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
     from PyQt5 import QtPrintSupport
 
 else:
@@ -15,11 +15,34 @@ else:
     from PySide2.QtCore import QUrl
     from PySide2.QtGui import QIcon
     from PySide2.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
-    from PySide2.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog
+    from PySide2.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
     from PySide2 import QtPrintSupport
+
+import platform
+
+if platform.system() == "Linux":
+    # This import is needed to fix errors with Nvidia Drivers on Ubuntu/Debian QtWebEngine: can load wrong libGL.so
+    # See issue 3332
+    try:
+        # from OpenGL import GL
+        import ctypes
+        ctypes.CDLL('libGL.so.1', ctypes.RTLD_GLOBAL)
+        libgcc_s = ctypes.CDLL("libgcc_s.so.1")
+    except:
+        pass
 
 import os
 import sys
+
+try:
+    wizardwebsshport = os.path.abspath(os.path.dirname(sys.argv[0])) + "/" + "wizardwebsshport.txt"
+    free_port = open(wizardwebsshport, 'r').read().replace('\n', ' ')
+    # print(free_port)
+
+    ssh_terminal_url = 'http://localhost:' + free_port
+    print(ssh_terminal_url)
+except:
+    pass
 
 
 class TabbedTerminal(QTabWidget):
@@ -27,25 +50,31 @@ class TabbedTerminal(QTabWidget):
         super(TabbedTerminal, self).__init__(parent)
 
         self.setDocumentMode(True)
+        self.setTabPosition(QTabWidget.South)
+        self._new_button = QPushButton(self)
+        self._new_button.setText("New SSH Session")
+        self._new_button.clicked.connect(self.add_new_tab)
+        self.setCornerWidget(self._new_button)
         self.tabBarDoubleClicked.connect(self.tab_open_doubleclick)
         self.currentChanged.connect(self.current_tab_changed)
         self.setTabsClosable(True)
+        self.setMovable(True)
         self.tabCloseRequested.connect(self.close_current_tab)
 
         # Uncomment to disable native menubar on Mac
         # self.menuBar().setNativeMenuBar(False)
-
-        self.add_new_tab(QUrl('http://localhost:8888/'), 'Homepage')
+        self.add_new_tab(QUrl(ssh_terminal_url), 'Homepage')
 
         # self.show()
 
         self.setWindowTitle("Wizard Assistant SSH")
         self.setWindowIcon(QIcon(os.path.join('images', 'ma-icon-64.png')))
 
-    def add_new_tab(self, qurl=None, label="Blank"):
+    def add_new_tab(self, qurl=ssh_terminal_url, label="Blank"):
 
-        if qurl is None:
-            qurl = QUrl('http://localhost:8888/')
+        # if qurl is None:
+        # qurl = QUrl('http://localhost:8888/')
+        qurl = QUrl(ssh_terminal_url)
 
         browser = QWebEngineView()
         # self.webSettings = browser.settings()
@@ -65,8 +94,8 @@ class TabbedTerminal(QTabWidget):
 
         # More difficult! We only want to update the url when it's from the
         # correct tab
-        browser.urlChanged.connect(lambda qurl, browser=browser:
-                                   self.update_urlbar(qurl, browser))
+        # browser.urlChanged.connect(lambda qurl, browser=browser:
+        #                           self.update_urlbar(qurl, browser))
 
         browser.loadFinished.connect(lambda _, i=i, browser=browser:
                                      self.setTabText(i, browser.page().title()))
@@ -94,10 +123,10 @@ class TabbedTerminal(QTabWidget):
         self.setWindowTitle("%s - Wizard Assistant SSH" % title)
 
     def navigate_webssh(self):
-        self.currentWidget().setUrl(QUrl("http://localhost:8888/"))
+        self.currentWidget().setUrl(QUrl(ssh_terminal_url))
 
     def navigate_home(self):
-        self.currentWidget().setUrl(QUrl("http://localhost:8888/"))
+        self.currentWidget().setUrl(QUrl(ssh_terminal_url))
 
     def navigate_to_url(self):  # Does not receive the Url
         q = QUrl(self.urlbar.text())
@@ -119,6 +148,7 @@ class TabbedTerminal(QTabWidget):
 
 if __name__ == "__main__":
     import sys
+
     # sys.argv.append("--remote-debugging-port=8000")
     # sys.argv.append("--disable-web-security")
     app = QApplication(sys.argv)
