@@ -66,19 +66,15 @@ MAC = (platform.system() == "Darwin")
 
 platform = platform.system()
 
-
 print(str(platform))
 
 try:
-    if platform == 'Windows':
-        target_db = (os.path.abspath(os.path.dirname(sys.argv[0])) + "\\" + "wizardassistant.db")
-
-    if platform == 'Linux':
-        target_db = (os.path.abspath(os.path.dirname(sys.argv[0])) + "/" + "wizardassistant.db")
+    target_db = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardassistant.db")
 except:
     pass
 
 print('target_db expected path: ' + target_db)
+
 
 def default_ssh_connection(priority):
     global target_db, ssh_id, ssh_priority, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_public_key_file, ssh_private_key_file
@@ -381,10 +377,13 @@ class MixinHandler(object):
         for header in self.custom_headers.items():
             self.set_header(*header)
 
-    def get_value(self, name):
+    # def get_value(self, name):
+    def get_value(self, name, default=None):
         value = self.get_argument(name)
         if not value:
-            raise InvalidValueError('Missing value {}'.format(name))
+            if not default:
+                raise InvalidValueError('Missing value {}'.format(name))
+            return default
         return value
 
     def get_context_addr(self):
@@ -473,7 +472,8 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         return value, filename
 
     def get_hostname(self):
-        value = self.get_value('hostname')
+        # value = self.get_value('hostname')
+        value = self.get_value('hostname', 'localhost')
         if not (is_valid_hostname(value) or is_valid_ip_address(value)):
             raise InvalidValueError('Invalid hostname: {}'.format(value))
         return value
@@ -571,7 +571,8 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         logging.info('Connecting to {}:{}'.format(*dst_addr))
 
         try:
-            ssh.connect(*args, allow_agent=options.allow_agent, look_for_keys=options.look_for_keys, timeout=options.timeout)
+            ssh.connect(*args, allow_agent=options.allow_agent, look_for_keys=options.look_for_keys,
+                        timeout=options.timeout)
         except socket.error:
             raise ValueError('Unable to connect to {}:{}'.format(*dst_addr))
         except paramiko.BadAuthenticationType:

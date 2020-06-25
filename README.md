@@ -46,7 +46,7 @@ A simple web application to be used as an ssh client to connect to your ssh serv
 
 1. Install this app, run command `pip install wizardwebssh`
 2. Start a webserver, run command `wssh`
-3. Open your browser, navigate to `127.0.0.1:8888`
+3. Open your browser, navigate to `127.0.0.1:8889`
 4. Input your data, submit the form.
 
 
@@ -113,32 +113,32 @@ Support passing arguments by url (query or fragment) like following examples:
 
 Passing form data (password must be encoded in base64, privatekey not supported)
 ```bash
-http://localhost:8888/?hostname=xx&username=yy&password=str_base64_encoded
+http://localhost:8889/?hostname=xx&username=yy&password=str_base64_encoded
 ```
 
 Passing a terminal background color
 ```bash
-http://localhost:8888/#bgcolor=green
+http://localhost:8889/#bgcolor=green
 ```
 
 Passing a user defined title
 ```bash
-http://localhost:8888/?title=my-ssh-server
+http://localhost:8889/?title=my-ssh-server
 ```
 
 Passing an encoding
 ```bash
-http://localhost:8888/#encoding=gbk
+http://localhost:8889/#encoding=gbk
 ```
 
 Passing a command executed right after login
 ```bash
-http://localhost:8888/?command=pwd
+http://localhost:8889/?command=pwd
 ```
 
 Passing a terminal type
 ```bash
-http://localhost:8888/?term=xterm-256color
+http://localhost:8889/?term=xterm-256color
 ```
 
 ### Use Docker
@@ -175,12 +175,12 @@ python -m pytest tests
 Running behind an Nginx server
 
 ```bash
-wssh --address='127.0.0.1' --port=8888 --policy=reject
+wssh --address='127.0.0.1' --port=8889 --policy=reject
 ```
 ```nginx
 # Nginx config example
 location / {
-    proxy_pass http://127.0.0.1:8888;
+    proxy_pass http://127.0.0.1:8889;
     proxy_http_version 1.1;
     proxy_read_timeout 300;
     proxy_set_header Upgrade $http_upgrade;

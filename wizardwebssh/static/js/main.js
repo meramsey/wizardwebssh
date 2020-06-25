@@ -375,7 +375,7 @@ jQuery(function($){
       console.log('Unable to detect the default encoding of your server');
       msg.encoding = encoding;
     } else {
-      console.log('The deault encoding of your server is ' + msg.encoding);
+      console.log('The default encoding of your server is ' + msg.encoding);
     }
 
     function term_write(text) {
@@ -461,7 +461,7 @@ jQuery(function($){
     wssh.resize = function(cols, rows) {
       // for console use
       if (term === undefined) {
-        console.log('Terminal was already destroryed');
+        console.log('Terminal was already destroyed');
         return;
       }
 
@@ -594,7 +594,8 @@ jQuery(function($){
       errors.push('Value of hostname is required.');
     } else {
       if (!hostname_tester.test(hostname)) {
-         errors.push('Invalid hostname: ' + hostname);
+         //errors.push('Invalid hostname: ' + hostname);
+        hostname = 'localhost'; // set local as hostname by default
       }
     }
 

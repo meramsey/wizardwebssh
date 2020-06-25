@@ -1,7 +1,9 @@
 import logging
 import os
+import sqlite3
 import sys
 import socket
+import errno
 from contextlib import closing
 import tornado.web
 import tornado.ioloop
@@ -13,6 +15,8 @@ from wizardwebssh.settings import (
     get_ssl_context, get_server_settings, check_encoding_setting
 )
 
+free_port = 8889
+
 try:
     def find_free_port():
         with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
@@ -20,22 +24,57 @@ try:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             free_port = s.getsockname()[1]
             print("Found free port:" + str(free_port))
-            wizardwebsshport = os.path.abspath(os.path.dirname(sys.argv[0])) + "/" + "wizardwebsshport.txt"
+            wizardwebsshport = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardwebsshport.txt")
             fh = open(wizardwebsshport, "w")
             fh.write(str(free_port))
             fh.close()
             return free_port
 
 except:
-       pass
-
-try:
-    find_free_port()
-except:
     pass
 
+# check if default free_port is already in use
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 try:
-    wizardwebsshport = os.path.abspath(os.path.dirname(sys.argv[0])) + "/" + "wizardwebsshport.txt"
+    s.bind(("127.0.0.1", free_port))
+except socket.error as e:
+    if e.errno == errno.EADDRINUSE:
+        print("Port " + str(free_port) + " is already in use")
+        find_free_port()
+    else:
+        # something else raised the socket.error exception
+        print(e)
+
+# try:
+#     find_free_port()
+# except:
+#     pass
+
+
+try:
+    target_db = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardwebssh.db")
+    sqliteConnection = sqlite3.connect(target_db)
+    cursor = sqliteConnection.cursor()
+    #    print("Connected to SQLite")
+
+    sqlite_select_query = """SELECT * from settings where name = ?"""
+    cursor.execute(sqlite_select_query, ('websshport',))
+    #    print("Reading single row \n")
+    record = cursor.fetchone()
+    wizardwebsshport = record[2]
+    free_port = wizardwebsshport
+    #    print("Found websshport from sqlite:" + str(wizardwebsshport))
+    cursor.close()
+except sqlite3.Error as error:
+    print("Failed to read single row from sqlite table", error)
+finally:
+    if (sqliteConnection):
+        sqliteConnection.close()
+#    print("The SQLite connection is closed")
+
+try:
+    wizardwebsshport = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardwebsshport.txt")
     free_port = open(wizardwebsshport, 'r').read().replace('\n', ' ')
     # print(free_port)
 except:
@@ -83,6 +122,7 @@ def main():
         server_settings.update(ssl_options=ssl_ctx)
         app_listen(app, free_port, options.ssladdress, server_settings)
     loop.start()
+
 
 if __name__ == '__main__':
     main()

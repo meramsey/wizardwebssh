@@ -1,22 +1,30 @@
+import sqlite3
 import sys
+from qtpy import QtGui, QtWidgets, QtCore
+from qtpy.QtCore import Signal, Slot
+from qtpy.QtCore import QUrl
+from qtpy.QtGui import QIcon
+from qtpy.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
+from qtpy.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
+# from qtpy import QtPrintSupport
 
-if 'PyQt5' in sys.modules:
-    # PyQt5
-    from PyQt5 import QtGui, QtWidgets, QtCore
-    from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot
-    from PyQt5.QtCore import QUrl
-    from PyQt5.QtGui import QIcon
-    from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
-    from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
-    from PyQt5 import QtPrintSupport
-
-else:
-    # PySide2
-    from PySide2.QtCore import QUrl
-    from PySide2.QtGui import QIcon
-    from PySide2.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
-    from PySide2.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
-    from PySide2 import QtPrintSupport
+# if 'PyQt5' in sys.modules:
+#     # PyQt5
+#     from PyQt5 import QtGui, QtWidgets, QtCore
+#     from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot
+#     from PyQt5.QtCore import QUrl
+#     from PyQt5.QtGui import QIcon
+#     from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
+#     from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
+#     from PyQt5 import QtPrintSupport
+#
+# else:
+#     # PySide2
+#     from PySide2.QtCore import QUrl
+#     from PySide2.QtGui import QIcon
+#     from PySide2.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
+#     from PySide2.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
+#     from PySide2 import QtPrintSupport
 
 import platform
 
@@ -34,11 +42,38 @@ if platform.system() == "Linux":
 import os
 import sys
 
+free_port = '8889'
+
 try:
-    wizardwebsshport = os.path.abspath(os.path.dirname(sys.argv[0])) + "/" + "wizardwebsshport.txt"
+    target_db = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardwebssh.db")
+    sqliteConnection = sqlite3.connect(target_db)
+    cursor = sqliteConnection.cursor()
+    #    print("Connected to SQLite")
+
+    sqlite_select_query = """SELECT * from settings where name = ?"""
+    cursor.execute(sqlite_select_query, ('websshport',))
+    #    print("Reading single row \n")
+    record = cursor.fetchone()
+    wizardwebsshport = record[2]
+    free_port = wizardwebsshport
+    #    print("Found websshport from sqlite:" + str(wizardwebsshport))
+    cursor.close()
+except sqlite3.Error as error:
+    print("Failed to read single row from sqlite table", error)
+finally:
+    if (sqliteConnection):
+        sqliteConnection.close()
+#    print("The SQLite connection is closed")
+
+try:
+    wizardwebsshport = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardwebsshport.txt")
     free_port = open(wizardwebsshport, 'r').read().replace('\n', ' ')
     # print(free_port)
+except:
+    pass
 
+
+try:
     ssh_terminal_url = 'http://localhost:' + free_port
     print(ssh_terminal_url)
 except:
