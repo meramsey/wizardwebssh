@@ -1,80 +1,40 @@
-import sqlite3
-import sys
-from qtpy import QtGui, QtWidgets, QtCore
-from qtpy.QtCore import Signal, Slot
-from qtpy.QtCore import QUrl
-from qtpy.QtGui import QIcon
-from qtpy.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
-from qtpy.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
-# from qtpy import QtPrintSupport
-
-# if 'PyQt5' in sys.modules:
-#     # PyQt5
-#     from PyQt5 import QtGui, QtWidgets, QtCore
-#     from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot
-#     from PyQt5.QtCore import QUrl
-#     from PyQt5.QtGui import QIcon
-#     from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
-#     from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
-#     from PyQt5 import QtPrintSupport
-#
-# else:
-#     # PySide2
-#     from PySide2.QtCore import QUrl
-#     from PySide2.QtGui import QIcon
-#     from PySide2.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
-#     from PySide2.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
-#     from PySide2 import QtPrintSupport
-
 import platform
+import sqlite3
+from PyQt5 import QtGui, QtWidgets, QtCore
+from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot
+from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
+from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
 
-if platform.system() == "Linux":
-    # This import is needed to fix errors with Nvidia Drivers on Ubuntu/Debian QtWebEngine: can load wrong libGL.so
-    # See issue 3332
-    try:
-        # from OpenGL import GL
-        import ctypes
-        ctypes.CDLL('libGL.so.1', ctypes.RTLD_GLOBAL)
-        libgcc_s = ctypes.CDLL("libgcc_s.so.1")
-    except:
-        pass
+
+# if platform.system() == "Linux":
+#     try:
+#          import ctypes
+#          ctypes.CDLL('libGL.so.1', ctypes.RTLD_GLOBAL)
+#          libgcc_s = ctypes.CDLL("libgcc_s.so.1")
+#     except:
+#          pass
 
 import os
 import sys
 
 free_port = '8889'
 
-try:
-    target_db = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardwebssh.db")
-    sqliteConnection = sqlite3.connect(target_db)
-    cursor = sqliteConnection.cursor()
-    #    print("Connected to SQLite")
+settings = QtCore.QSettings('WizardAssistant', 'WizardAssistantDesktop')
 
-    sqlite_select_query = """SELECT * from settings where name = ?"""
-    cursor.execute(sqlite_select_query, ('websshport',))
-    #    print("Reading single row \n")
-    record = cursor.fetchone()
-    wizardwebsshport = record[2]
+if settings.contains("wizardwebsshport"):
+    # there is the key in QSettings
+    # print('Checking for wizardwebsshport in config')
+    wizardwebsshport = settings.value('wizardwebsshport')
+    # print('Found wizardwebsshport port in config:' + wizardwebsshport)
     free_port = wizardwebsshport
-    #    print("Found websshport from sqlite:" + str(wizardwebsshport))
-    cursor.close()
-except sqlite3.Error as error:
-    print("Failed to read single row from sqlite table", error)
-finally:
-    if (sqliteConnection):
-        sqliteConnection.close()
-#    print("The SQLite connection is closed")
-
-try:
-    wizardwebsshport = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardwebsshport.txt")
-    free_port = open(wizardwebsshport, 'r').read().replace('\n', ' ')
-    # print(free_port)
-except:
+else:
+    print('wizardwebsshport not found in config')
     pass
 
-
 try:
-    ssh_terminal_url = 'http://localhost:' + free_port
+    ssh_terminal_url = 'http://localhost:' + str(free_port)
     print(ssh_terminal_url)
 except:
     pass
