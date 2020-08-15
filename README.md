@@ -16,7 +16,7 @@ A simple web application to be used as an ssh client to connect to your ssh serv
 * Sqlite DB support for SSH Config.
 * PyQT5 MultiTabbed Terminal Widget for embedding into PyQT5 apps.
 * Encrypted keys supported.
-* Two-Factor Authentication (time-based one-time password) supported.
+* Two-Factor Authentication (time-based one-time password, Duo Push Auth) supported.
 * Fullscreen terminal supported.
 * Terminal window resizable.
 * Auto detect the ssh server's default encoding.

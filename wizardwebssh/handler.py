@@ -10,10 +10,13 @@ import traceback
 import weakref
 from binascii import hexlify
 import sqlite3
+from pathlib import Path
 import paramiko
 import tornado.web
-
 from concurrent.futures import ThreadPoolExecutor
+from PyQt5 import QtCore
+from PyQt5.QtCore import QStandardPaths
+from paramiko import SSHException
 from tornado.ioloop import IOLoop
 from tornado.options import options
 from tornado.process import cpu_count
@@ -43,6 +46,8 @@ priority = 0
 swallow_http_errors = True
 redirecting = None
 
+duo_auth = False
+
 ssh_id = ''
 ssh_priority = ''
 ssh_connection_name = ''
@@ -57,7 +62,7 @@ ssh_port = ''
 ssh_proxy_command = ''
 ssh_public_key_file = ''
 ssh_private_key_file = ''
-target_db = ''
+sshconfig_db = ''
 
 # Platforms
 WINDOWS = (platform.system() == "Windows")
@@ -66,15 +71,25 @@ MAC = (platform.system() == "Darwin")
 
 platform = platform.system()
 
-print(str(platform))
+settings = QtCore.QSettings('WizardAssistant', 'WizardAssistantDesktop')
 
-try:
-    target_db = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardassistant.db")
-except:
+if settings.contains("sshconfig_db"):
+    # there is the key in QSettings
+    print('Checking for ssh_db location preference in config')
+    sshconfig_db = settings.value('sshconfig_db')
+    print('Found sshconfig_db in config:' + sshconfig_db)
+else:
+    print('sshconfig_db not found in config. Using default')
+    config_data_dir = Path(QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation))
+    sshconfig_db = config_data_dir / "wizardwebssh.db"
+    settings.setValue('ssh_db', str(sshconfig_db))
     pass
 
-print('target_db expected path: ' + target_db)
+# target_db = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardassistant.db")
+target_db = str(sshconfig_db)
 
+
+# print('target_db expected path: ' + target_db)
 
 def default_ssh_connection(priority):
     global target_db, ssh_id, ssh_priority, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_public_key_file, ssh_private_key_file
@@ -102,20 +117,20 @@ def default_ssh_connection(priority):
         ssh_private_key_file = record[12]
         ssh_public_key_file = record[13]
 
-        # print("Id: ", record[0])
-        # print("Priority: ", record[1])
-        # print("Connection Name: ", record[2])
-        # print("SSH Username: ", record[3])
-        # print("SSH Password: ", record[4])
-        # print("SSH KeyPassphrase: ", record[5])
-        # print("SSH PublicKey: ", record[6])
-        # print("SSH PrivateKey: ", record[7])
-        # print("SSH Host: ", record[8])
-        # print("SSH Hostname: ", record[9])
-        # print("SSH Port: ", record[10])
-        # print("SSH ProxyCommand: ", record[11])
-        # print("SSH PrivateKey file: ", record[12])
-        # print("SSH Public file: ", record[13])
+        print("Id: ", record[0])
+        print("Priority: ", record[1])
+        print("Connection Name: ", record[2])
+        print("SSH Username: ", record[3])
+        print("SSH Password: ", record[4])
+        print("SSH KeyPassphrase: ", record[5])
+        print("SSH PublicKey: ", record[6])
+        print("SSH PrivateKey: ", record[7])
+        print("SSH Host: ", record[8])
+        print("SSH Hostname: ", record[9])
+        print("SSH Port: ", record[10])
+        print("SSH ProxyCommand: ", record[11])
+        print("SSH PrivateKey file: ", record[12])
+        print("SSH Public file: ", record[13])
 
         cursor.close()
 
@@ -125,6 +140,7 @@ def default_ssh_connection(priority):
         if (sqliteConnection):
             sqliteConnection.close()
             print("The SQLite connection is closed")
+            pass
 
 
 class InvalidValueError(Exception):
@@ -132,14 +148,23 @@ class InvalidValueError(Exception):
 
 
 class SSHClient(paramiko.SSHClient):
+    duo_auth = False
 
     def handler(self, title, instructions, prompt_list):
         answers = []
+        global duo_auth
+
+        if title.startswith('Duo two-factor login'):
+            duo_auth = True
+            raise SSHException("Expecting one field only.")
+
         for prompt_, _ in prompt_list:
             prompt = prompt_.strip().lower()
             if prompt.startswith('password'):
                 answers.append(self.password)
             elif prompt.startswith('verification'):
+                answers.append(self.totp)
+            elif prompt.startswith('passcode'):
                 answers.append(self.totp)
             else:
                 raise ValueError('Unknown prompt: {}'.format(prompt_))
@@ -155,7 +180,7 @@ class SSHClient(paramiko.SSHClient):
         saved_exception = None
         two_factor = False
         allowed_types = set()
-        two_factor_types = {'keyboard-interactive', 'password'}
+        two_factor_types = {'keyboard-interactive', 'password', 'publickey'}
 
         agent = paramiko.Agent()
         try:
@@ -187,8 +212,8 @@ class SSHClient(paramiko.SSHClient):
             except paramiko.SSHException as e:
                 saved_exception = e
 
-        if two_factor:
-            logging.info('Trying publickey 2fa')
+        if duo_auth or two_factor:
+            logging.info('Trying 2fa interactive auth')
             return self.auth_interactive(username, self.handler)
 
         if password is not None:
@@ -200,10 +225,6 @@ class SSHClient(paramiko.SSHClient):
                 saved_exception = e
                 allowed_types = set(getattr(e, 'allowed_types', []))
                 two_factor = allowed_types & two_factor_types
-
-        if two_factor:
-            logging.info('Trying password 2fa')
-            return self.auth_interactive(username, self.handler)
 
         assert saved_exception is not None
         raise saved_exception
@@ -377,13 +398,10 @@ class MixinHandler(object):
         for header in self.custom_headers.items():
             self.set_header(*header)
 
-    # def get_value(self, name):
-    def get_value(self, name, default=None):
+    def get_value(self, name):
         value = self.get_argument(name)
         if not value:
-            if not default:
-                raise InvalidValueError('Missing value {}'.format(name))
-            return default
+            raise InvalidValueError('Missing value {}'.format(name))
         return value
 
     def get_context_addr(self):
@@ -472,8 +490,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         return value, filename
 
     def get_hostname(self):
-        # value = self.get_value('hostname')
-        value = self.get_value('hostname', 'localhost')
+        value = self.get_value('hostname')
         if not (is_valid_hostname(value) or is_valid_ip_address(value)):
             raise InvalidValueError('Invalid hostname: {}'.format(value))
         return value
@@ -500,7 +517,10 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
 
     def get_args(self):
         global priority, ssh_id, ssh_priority, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_public_key_file, ssh_private_key_file
-        default_ssh_connection(priority)
+        try:
+            default_ssh_connection(priority)
+        except:
+            pass
 
         hostname_form = self.get_hostname()
         port_form = self.get_port()

@@ -52,7 +52,7 @@ jQuery(function($){
       CONNECTING = 1,
       CONNECTED = 2,
       state = DISCONNECTED,
-      messages = {1: 'This client is connecting ...', 2: 'This client is already connnected.'},
+      messages = {1: 'This client is connecting ...', 2: 'This client is already connected.'},
       key_max_size = 16384,
       fields = ['hostname', 'port', 'username'],
       form_keys = fields.concat(['password', 'totp']),
@@ -369,6 +369,7 @@ jQuery(function($){
 
     term.fitAddon = new window.FitAddon.FitAddon();
     term.loadAddon(term.fitAddon);
+    term.setOption('scrollback', 9999999);
 
     console.log(url);
     if (!msg.encoding) {
