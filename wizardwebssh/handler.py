@@ -72,17 +72,17 @@ MAC = (platform.system() == "Darwin")
 platform = platform.system()
 
 settings = QtCore.QSettings('WizardAssistant', 'WizardAssistantDesktop')
+config_data_dir = Path("WizardAssistant/WizardAssistantDesktop")
 
 if settings.contains("sshconfig_db"):
     # there is the key in QSettings
-    print('Checking for ssh_db location preference in config')
+    print('Checking for sshconfig_db location preference in config')
     sshconfig_db = settings.value('sshconfig_db')
     print('Found sshconfig_db in config:' + sshconfig_db)
 else:
     print('sshconfig_db not found in config. Using default')
-    config_data_dir = Path(QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation))
-    sshconfig_db = config_data_dir / "wizardwebssh.db"
-    settings.setValue('ssh_db', str(sshconfig_db))
+    sshconfig_db = QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation) / config_data_dir / "wizardwebssh.db"
+    settings.setValue('sshconfig_db', str(sshconfig_db))
     pass
 
 # target_db = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardassistant.db")
