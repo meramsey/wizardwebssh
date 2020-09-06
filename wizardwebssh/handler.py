@@ -63,6 +63,7 @@ ssh_proxy_command = ''
 ssh_public_key_file = ''
 ssh_private_key_file = ''
 sshconfig_db = ''
+default_ssh_connection_name = ''
 
 # Platforms
 WINDOWS = (platform.system() == "Windows")
@@ -81,25 +82,34 @@ if settings.contains("sshconfig_db"):
     print('Found sshconfig_db in config:' + sshconfig_db)
 else:
     print('sshconfig_db not found in config. Using default')
-    sshconfig_db = QStandardPaths.writableLocation(QStandardPaths.AppConfigLocation) / config_data_dir / "wizardwebssh.db"
+    sshconfig_db = QStandardPaths.writableLocation(
+        QStandardPaths.AppConfigLocation) / config_data_dir / "wizardwebssh.db"
     settings.setValue('sshconfig_db', str(sshconfig_db))
     pass
 
-# target_db = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "wizardassistant.db")
-target_db = str(sshconfig_db)
+if settings.contains("ssh_connection_name"):
+    # there is the key in QSettings
+    print('Checking for sshconfig_db ssh_connection_name preference in config')
+    default_ssh_connection_name = settings.value('ssh_connection_name')
+    print('Found default_ssh_connection_name in config:' + default_ssh_connection_name)
+
+ssh_target_db = str(sshconfig_db)
 
 
-# print('target_db expected path: ' + target_db)
-
-def default_ssh_connection(priority):
-    global target_db, ssh_id, ssh_priority, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_public_key_file, ssh_private_key_file
+def default_ssh_connection():
+    global ssh_id, ssh_priority, default_ssh_connection_name, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_public_key_file, ssh_private_key_file
     try:
-        sqliteConnection = sqlite3.connect(target_db)
+        if settings.contains("ssh_connection_name"):
+            # there is the key in QSettings
+            print('Checking for sshconfig_db ssh_connection_name preference in config')
+            default_ssh_connection_name = settings.value('ssh_connection_name')
+            print('Found default_ssh_connection_name in config:' + default_ssh_connection_name)
+        sqliteConnection = sqlite3.connect(ssh_target_db)
         cursor = sqliteConnection.cursor()
         print("Connected to SQLite")
 
-        sqlite_select_query = """SELECT * from sshconfig where priority = ?"""
-        cursor.execute(sqlite_select_query, (priority,))
+        sqlite_select_query = """SELECT * from sshconfig where sshconnectionname = ?"""
+        cursor.execute(sqlite_select_query, (default_ssh_connection_name,))
         print("Reading single row \n")
         record = cursor.fetchone()
         ssh_id = record[0]
@@ -133,6 +143,19 @@ def default_ssh_connection(priority):
         print("SSH Public file: ", record[13])
 
         cursor.close()
+
+        # Populate the ssh_private_key variable from sqlite sshconfigdb if its empty and a filename is provided instead
+
+        if bool(ssh_private_key) is False and bool(ssh_private_key_file):
+            with open(ssh_private_key_file, 'r') as f:
+                ssh_private_key = f.read()  # Read whole file in the file_content string
+            print(ssh_private_key)
+        else:
+            pass
+
+        # update default default_ssh_connection_name with new session name
+        if bool(ssh_connection_name) is not False:
+            default_ssh_connection_name = ssh_connection_name
 
     except sqlite3.Error as error:
         print("Failed to read single row from sqlite table", error)
@@ -518,7 +541,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
     def get_args(self):
         global priority, ssh_id, ssh_priority, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_public_key_file, ssh_private_key_file
         try:
-            default_ssh_connection(priority)
+            default_ssh_connection()
         except:
             pass
 
@@ -537,7 +560,9 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         port = port_form if bool(port_form) is not False else ssh_port
         username = username_form if bool(username_form) is not False else ssh_username
         password = password_form if bool(password_form) is not False else ssh_password
-        privatekey = privatekey_form if bool(privatekey_form) is not False else bytes.decode(ssh_private_key) if bool(
+        # privatekey = privatekey_form if bool(privatekey_form) is not False else bytes.decode(ssh_private_key) if bool(
+        #    ssh_private_key) is not False else print('No Private key provided')
+        privatekey = privatekey_form if bool(privatekey_form) is not False else ssh_private_key if bool(
             ssh_private_key) is not False else print('No Private key provided')
         passphrase = passphrase_form if bool(passphrase_form) is not False else ssh_key_passphrase
 
