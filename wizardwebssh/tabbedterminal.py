@@ -7,7 +7,6 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
 from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
 
-
 # if platform.system() == "Linux":
 #     try:
 #          import ctypes
@@ -72,7 +71,7 @@ class TabbedTerminal(QTabWidget):
         qurl = QUrl(ssh_terminal_url)
 
         browser = QWebEngineView()
-        # self.webSettings = browser.settings()
+        self.webSettings = browser.settings()
         # self.webSettings.setAttribute(QWebEngineSettings.PluginsEnabled, True)
         # self.webSettings.setAttribute(QWebEngineSettings.JavascriptEnabled, True)
         # self.webSettings.setAttribute(QWebEngineSettings.LocalStorageEnabled, True)
@@ -94,6 +93,11 @@ class TabbedTerminal(QTabWidget):
 
         browser.loadFinished.connect(lambda _, i=i, browser=browser:
                                      self.setTabText(i, browser.page().title()))
+        browser.titleChanged.connect(lambda _, i=i, browser=browser:
+                                     self.setTabText(i, browser.page().title()))
+        browser.titleChanged.connect(lambda _, i=i, browser=browser:
+                                     self.setTabToolTip(i, browser.page().title()))
+        browser.loadFinished.connect(self.on_load_finished)
 
     def tab_open_doubleclick(self, i):
         if i == -1:  # No tab under the click

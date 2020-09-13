@@ -370,6 +370,8 @@ jQuery(function($){
     term.fitAddon = new window.FitAddon.FitAddon();
     term.loadAddon(term.fitAddon);
     term.setOption('scrollback', 9999999);
+    term.setOption('convertEol', true);
+
 
     console.log(url);
     if (!msg.encoding) {
@@ -595,8 +597,7 @@ jQuery(function($){
       errors.push('Value of hostname is required.');
     } else {
       if (!hostname_tester.test(hostname)) {
-         //errors.push('Invalid hostname: ' + hostname);
-        hostname = 'localhost'; // set local as hostname by default
+         errors.push('Invalid hostname: ' + hostname);
       }
     }
 
@@ -724,6 +725,7 @@ jQuery(function($){
         url: url,
         type: 'post',
         data: data,
+        cache: false,
         complete: ajax_complete_callback
     });
 
