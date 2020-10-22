@@ -1,9 +1,12 @@
 import platform
 import sqlite3
+import threading
+import time
+
 from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot
+from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot, Qt
 from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
 from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
 
@@ -37,6 +40,37 @@ try:
     print(ssh_terminal_url)
 except:
     pass
+
+class WizardWebssh(object):
+    """ Threading example class
+    The run() method will be started and it will run in the background
+    until the application exits.
+    """
+
+    def __init__(self, interval=1):
+        """ Constructor
+        :type interval: int
+        :param interval: Check interval, in seconds
+        """
+        self.interval = interval
+
+        thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True  # Daemonize thread
+        thread.start()  # Start the execution
+
+    def run(self):
+        """ Method that runs forever """
+        while True:
+            # Start WebSSH Service in background.
+            print('Starting SSH websocket server in the background')
+            import asyncio
+
+            asyncio.set_event_loop(asyncio.new_event_loop())
+            from wizardwebssh.main import main as wssh
+            wssh()
+            print('Stopped SSH websocket server in the background')
+            QApplication.processEvents()
+            time.sleep(self.interval)
 
 
 class TabbedTerminal(QTabWidget):
@@ -97,7 +131,7 @@ class TabbedTerminal(QTabWidget):
                                      self.setTabText(i, browser.page().title()))
         browser.titleChanged.connect(lambda _, i=i, browser=browser:
                                      self.setTabToolTip(i, browser.page().title()))
-        browser.loadFinished.connect(self.on_load_finished)
+        # browser.loadFinished.connect(self.on_load_finished)
 
     def tab_open_doubleclick(self, i):
         if i == -1:  # No tab under the click
@@ -147,10 +181,29 @@ class TabbedTerminal(QTabWidget):
 
 if __name__ == "__main__":
     import sys
-
+    wizardwebssh_service = WizardWebssh()
+    time.sleep(.300)
     # sys.argv.append("--remote-debugging-port=8000")
     # sys.argv.append("--disable-web-security")
     app = QApplication(sys.argv)
+    QApplication.setStyle("Fusion")
+    #
+    # # Now use a palette to switch to dark colors:
+    palette = QPalette()
+    palette.setColor(QPalette.Window, QColor(53, 53, 53))
+    palette.setColor(QPalette.WindowText, Qt.white)
+    palette.setColor(QPalette.Base, QColor(25, 25, 25))
+    palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+    palette.setColor(QPalette.ToolTipBase, QColor(25, 25, 25))
+    palette.setColor(QPalette.ToolTipText, Qt.white)
+    palette.setColor(QPalette.Text, Qt.white)
+    palette.setColor(QPalette.Button, QColor(53, 53, 53))
+    palette.setColor(QPalette.ButtonText, Qt.white)
+    palette.setColor(QPalette.BrightText, Qt.red)
+    palette.setColor(QPalette.Link, QColor(42, 130, 218))
+    palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+    palette.setColor(QPalette.HighlightedText, Qt.black)
+    QApplication.setPalette(palette)
     app.setApplicationName("Wizard Assistant SSH")
     app.setOrganizationName("Wizard Assistant")
     app.setOrganizationDomain("wizardassistant.com")
