@@ -158,6 +158,58 @@ Passing a terminal type
 
     http://localhost:8889/?term=xterm-256color
 
+Use Pyqt5 SSH Terminal Widget
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Start up the wizardwebssh ssh service
+
+::
+
+    class WizardWebssh(object):
+    """ Threading example class
+    The run() method will be started and it will run in the background
+    until the application exits.
+    """
+
+    def __init__(self, interval=1):
+        """ Constructor
+        :type interval: int
+        :param interval: Check interval, in seconds
+        """
+        self.interval = interval
+
+        thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True  # Daemonize thread
+        thread.start()  # Start the execution
+
+    def run(self):
+        """ Method that runs forever """
+        while True:
+            # Start WebSSH Service in background.
+            print('Starting SSH websocket server in the background')
+            import asyncio
+
+            asyncio.set_event_loop(asyncio.new_event_loop())
+            from wizardwebssh.main import main as wssh
+            wssh()
+            print('Stopped SSH websocket server in the background')
+            QApplication.processEvents()
+            time.sleep(self.interval)
+
+
+    wizardwebssh_service = WizardWebssh()
+    time.sleep(.300)
+
+Embed the widget as desired
+
+::
+
+    win = TabbedTerminal()
+    win.show()
+
+
+Review tabbedbterminal.py for full standalone working example of SSH terminal widget.
+
 Use Docker
 ~~~~~~~~~~
 

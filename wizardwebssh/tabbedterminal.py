@@ -8,7 +8,7 @@ from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot, Qt
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QIcon, QPalette, QColor
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
-from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton
+from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton, QStyle
 
 # if platform.system() == "Linux":
 #     try:
@@ -40,6 +40,7 @@ try:
     print(ssh_terminal_url)
 except:
     pass
+
 
 class WizardWebssh(object):
     """ Threading example class
@@ -106,6 +107,7 @@ class TabbedTerminal(QTabWidget):
 
         browser = QWebEngineView()
         self.webSettings = browser.settings()
+        style = self.style()
         # self.webSettings.setAttribute(QWebEngineSettings.PluginsEnabled, True)
         # self.webSettings.setAttribute(QWebEngineSettings.JavascriptEnabled, True)
         # self.webSettings.setAttribute(QWebEngineSettings.LocalStorageEnabled, True)
@@ -131,6 +133,10 @@ class TabbedTerminal(QTabWidget):
                                      self.setTabText(i, browser.page().title()))
         browser.titleChanged.connect(lambda _, i=i, browser=browser:
                                      self.setTabToolTip(i, browser.page().title()))
+        browser.titleChanged.connect(lambda _, i=i, browser=browser: self.setTabIcon(i, QtGui.QIcon(
+            style.standardIcon(QStyle.SP_MessageBoxCritical))) if (
+                    "WebSSH" in browser.page().title()) else self.setTabIcon(i, QtGui.QIcon(
+            style.standardIcon(QStyle.SP_ComputerIcon))))
         # browser.loadFinished.connect(self.on_load_finished)
 
     def tab_open_doubleclick(self, i):
@@ -181,6 +187,7 @@ class TabbedTerminal(QTabWidget):
 
 if __name__ == "__main__":
     import sys
+
     wizardwebssh_service = WizardWebssh()
     time.sleep(.300)
     # sys.argv.append("--remote-debugging-port=8000")
@@ -189,21 +196,26 @@ if __name__ == "__main__":
     QApplication.setStyle("Fusion")
     #
     # # Now use a palette to switch to dark colors:
-    palette = QPalette()
-    palette.setColor(QPalette.Window, QColor(53, 53, 53))
-    palette.setColor(QPalette.WindowText, Qt.white)
-    palette.setColor(QPalette.Base, QColor(25, 25, 25))
-    palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-    palette.setColor(QPalette.ToolTipBase, QColor(25, 25, 25))
-    palette.setColor(QPalette.ToolTipText, Qt.white)
-    palette.setColor(QPalette.Text, Qt.white)
-    palette.setColor(QPalette.Button, QColor(53, 53, 53))
-    palette.setColor(QPalette.ButtonText, Qt.white)
-    palette.setColor(QPalette.BrightText, Qt.red)
-    palette.setColor(QPalette.Link, QColor(42, 130, 218))
-    palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-    palette.setColor(QPalette.HighlightedText, Qt.black)
-    QApplication.setPalette(palette)
+    dark_palette = QPalette()
+    dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.WindowText, Qt.white)
+    dark_palette.setColor(QPalette.Base, QColor(35, 35, 35))
+    dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ToolTipBase, QColor(25, 25, 25))
+    dark_palette.setColor(QPalette.ToolTipText, Qt.white)
+    dark_palette.setColor(QPalette.Text, Qt.white)
+    dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ButtonText, Qt.white)
+    dark_palette.setColor(QPalette.BrightText, Qt.red)
+    dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+    dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+    dark_palette.setColor(QPalette.HighlightedText, QColor(35, 35, 35))
+    dark_palette.setColor(QPalette.Active, QPalette.Button, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)
+    dark_palette.setColor(QPalette.Disabled, QPalette.WindowText, Qt.darkGray)
+    dark_palette.setColor(QPalette.Disabled, QPalette.Text, Qt.darkGray)
+    dark_palette.setColor(QPalette.Disabled, QPalette.Light, QColor(53, 53, 53))
+    QApplication.setPalette(dark_palette)
     app.setApplicationName("Wizard Assistant SSH")
     app.setOrganizationName("Wizard Assistant")
     app.setOrganizationDomain("wizardassistant.com")
