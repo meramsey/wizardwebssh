@@ -21,9 +21,9 @@ settings = QtCore.QSettings('WizardAssistant', 'WizardAssistantDesktop')
 
 if settings.contains("wizardwebsshport"):
     # there is the key in QSettings
-    #print('Checking for wizardwebsshport in config')
+    # print('Checking for wizardwebsshport in config')
     wizardwebsshport = settings.value('wizardwebsshport')
-    #print('Found wizardwebsshport port in config:' + wizardwebsshport)
+    # print('Found wizardwebsshport port in config:' + wizardwebsshport)
     free_port = wizardwebsshport
 else:
     print('wizardwebsshport not found in config')

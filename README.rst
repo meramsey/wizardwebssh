@@ -30,7 +30,7 @@ Features
 Preview
 ~~~~~~~
 
-|Login| |Terminal| |PyQT5 MultiTabbed Terminal Widget|
+|Login| |Terminal| |PyQT5 MultiTabbed Terminal Widget| |PyQT5 MultiTabbed DarkMode Terminal Widget| |PyQT5 MultiTabbed DarkMode Terminal Widget Login|
 
 How it works
 ~~~~~~~~~~~~
@@ -299,4 +299,5 @@ Tips
 .. |Login| image:: https://gitlab.com/mikeramsey/wizardwebssh/raw/master/preview/login.png
 .. |Terminal| image:: https://gitlab.com/mikeramsey/wizardwebssh/raw/master/preview/terminal.png
 .. |PyQT5 MultiTabbed Terminal Widget| image:: https://gitlab.com/mikeramsey/wizardwebssh/-/raw/master/preview/multitabbedterminalwidget.png
-
+.. |PyQT5 MultiTabbed DarkMode Terminal Widget| image:: https://gitlab.com/mikeramsey/wizardwebssh/-/raw/master/preview/TabbedTerminal_Example1.png
+.. |PyQT5 MultiTabbed DarkMode Terminal Widget Login| image:: https://gitlab.com/mikeramsey/wizardwebssh/-/raw/master/preview/TabbedTerminal_Example2.png
