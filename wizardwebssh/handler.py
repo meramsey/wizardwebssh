@@ -14,8 +14,9 @@ from pathlib import Path
 import paramiko
 import tornado.web
 from concurrent.futures import ThreadPoolExecutor
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtSql
 from PyQt5.QtCore import QStandardPaths
+from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
 from paramiko import SSHException
 from tornado.ioloop import IOLoop
 from tornado.options import options
@@ -49,7 +50,10 @@ redirecting = None
 duo_auth = False
 
 ssh_id = ''
+ssh_group = ''
 ssh_priority = ''
+ssh_key_name = ''
+ssh_config_name = ''
 ssh_connection_name = ''
 ssh_username = ''
 ssh_password = ''
@@ -93,77 +97,163 @@ if settings.contains("ssh_connection_name"):
     default_ssh_connection_name = settings.value('ssh_connection_name')
     print('Found default_ssh_connection_name in config:' + default_ssh_connection_name)
 
+sshdb = QSqlDatabase.addDatabase("QSQLITE", "SSHCONFIG")
+sshdb.setDatabaseName(str(sshconfig_db))
+sshdb.open()
+
 ssh_target_db = str(sshconfig_db)
 
 
-def default_ssh_connection():
-    global ssh_id, ssh_priority, default_ssh_connection_name, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_public_key_file, ssh_private_key_file
+def paramiko_host_info(host):
+    ssh_config = paramiko.SSHConfig()
+    user_config_file = os.path.expanduser("~/.ssh/config")
+    if os.path.exists(user_config_file):
+        with open(user_config_file) as f:
+            ssh_config.parse(f)
+            o = ssh_config.lookup(host)
+    # setup template
+    con = {'ssh_group_name': 'default',
+           'ssh_connection_name': host,
+           'ssh_username': '',
+           'ssh_password': '',
+           'Host': host,
+           'HostName': '',
+           'Port': '22',
+           'ProxyCommand': '',
+           'sshkey_name': 'None',
+           'sshkey_passphrase': '',
+           'sshkey_public': '',
+           'sshkey_private': '',
+           'sshkey_public_file': '',
+           'sshkey_private_file': '',
+           'ssh_config_name': 'default',
+           'ssh_config_content': ''}
+
+    if o:
+        if 'hostname' in o.keys():
+            con.update(HostName=o['hostname'])
+        if 'user' in o.keys():
+            con.update(ssh_username=o['user'])
+        if 'identityfile' in o.keys():
+            ident = o['identityfile']
+            if type(ident) is list:
+                ident = ident[0]
+                con.update(sshkey_private_file=ident)
+        if 'key_filename' in o.keys():
+            ident = o['identityfile']
+            con.update(sshkey_private_file=ident)
+        if 'port' in o.keys():
+            con.update(Port=o['port'])
+        if 'proxyjump' in o.keys():
+            con.update(ProxyCommand=o['proxyjump'])
+    print(
+        f'Printing paramiko host lookup dict: {con} from {os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])))}')
+    # todo how should we handle lookups for stuff that doesn't exist vs returning default stuff
+    return con
+
+
+def get_query_as_dict(query, database_name):
+    """
+    Get QSqlQuery  for single record as a dictionary with the columns as the keys.
+
+    Args:
+        query (): QSqlQuery to use.
+        database_name (): QSqlDatabase connection or database to use.
+
+    Returns: dictionary with key values of the query.
+
+    """
     try:
-        if settings.contains("ssh_connection_name"):
-            # there is the key in QSettings
-            print('Checking for sshconfig_db ssh_connection_name preference in config')
-            default_ssh_connection_name = settings.value('ssh_connection_name')
-            print('Found default_ssh_connection_name in config:' + default_ssh_connection_name)
-        sqliteConnection = sqlite3.connect(ssh_target_db)
-        cursor = sqliteConnection.cursor()
-        print("Connected to SQLite")
+        columns_names_mapping = {}
+        row_values = {}
+        q = QSqlQuery(f"{query}", db=database_name)
+        rec = q.record()
+        if q.exec():
+            if q.first():
+                for column in range(rec.count()):
+                    # print(column)
+                    field = rec.fieldName(column)
+                    value = q.value(column)
+                    columns_names_mapping[field] = column
+                    row_values[field] = str(value)
+                # print(str(row_values))
+                return row_values
+    except:
+        pass
 
-        sqlite_select_query = """SELECT * from sshconfig where sshconnectionname = ?"""
-        cursor.execute(sqlite_select_query, (default_ssh_connection_name,))
-        print("Reading single row \n")
-        record = cursor.fetchone()
-        ssh_id = record[0]
-        ssh_priority = record[1]
-        ssh_connection_name = record[2]
-        ssh_username = record[3]
-        ssh_password = record[4]
-        ssh_key_passphrase = record[5]
-        ssh_public_key = record[6]
-        ssh_private_key = record[7]
-        ssh_host = record[8]
-        ssh_hostname = record[9]
-        ssh_port = record[10]
-        ssh_proxy_command = record[11]
-        ssh_private_key_file = record[12]
-        ssh_public_key_file = record[13]
 
-        print("Id: ", record[0])
-        print("Priority: ", record[1])
-        print("Connection Name: ", record[2])
-        print("SSH Username: ", record[3])
-        print("SSH Password: ", record[4])
-        print("SSH KeyPassphrase: ", record[5])
-        print("SSH PublicKey: ", record[6])
-        print("SSH PrivateKey: ", record[7])
-        print("SSH Host: ", record[8])
-        print("SSH Hostname: ", record[9])
-        print("SSH Port: ", record[10])
-        print("SSH ProxyCommand: ", record[11])
-        print("SSH PrivateKey file: ", record[12])
-        print("SSH Public file: ", record[13])
+def get_default_ssh_connection_data(database_name, connection):
+    """
+    Gets ssh connection data for default connection.
 
-        cursor.close()
+    Args:
+        database_name (): QSqlDatabase connection or database to use.
+        connection (): ssh connection to get data for.
+
+    Returns: dictionary of ssh connection data
+
+    """
+    # query = f"SELECT * from sshconfig where sshconnectionname ='{connection}'"
+    query = query = f"""
+                SELECT ssh_group_name, ssh_connection_name,ssh_username,ssh_password,Host,HostName,Port,ProxyCommand,
+                sshkey_name,sshkey_passphrase,sshkey_public,sshkey_private,sshkey_public_file,sshkey_private_file,
+                ssh_config_name,ssh_config_content
+                FROM sshconnections
+                JOIN sshkeys ON sshconnections.ssh_key_id = sshkeys.id
+                JOIN sshgroup ON sshconnections.ssh_group_id = sshgroup.id
+                JOIN sshconfig ON sshconnections.ssh_config_id = sshconfig.id
+                WHERE ssh_connection_name =  '{connection}'
+                """
+    return get_query_as_dict(query, database_name)
+
+
+def default_ssh_connection(db, connection):
+    print('============BEGIN default_ssh_connection==================')
+    global ssh_id, ssh_group, ssh_priority, default_ssh_connection_name, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_key_name, ssh_config_name, ssh_public_key_file, ssh_private_key_file
+    try:
+        print(f'Looking up connection {connection} via sshconfig_db')
+        ssh_profile_dict = get_default_ssh_connection_data(db, connection)
+        print(f'Global ssh_hostname: {ssh_hostname}')
+        if ssh_profile_dict is None:
+            print(f'Looking up connection {connection} via sshconfig parser')
+            ssh_profile_dict = paramiko_host_info(connection)
+        # print(f"SSH Profile Dictionary: {ssh_profile_dict}")
+        ssh_group = ssh_profile_dict['ssh_group_name']
+        ssh_connection_name = ssh_profile_dict['ssh_connection_name']
+        ssh_username = ssh_profile_dict['ssh_username']
+        ssh_password = ssh_profile_dict['ssh_password']
+        ssh_host = ssh_profile_dict['Host']
+        ssh_hostname = ssh_profile_dict['HostName']
+        ssh_port = ssh_profile_dict['Port']
+        ssh_proxy_command = ssh_profile_dict['ProxyCommand']
+        ssh_key_name = ssh_profile_dict['sshkey_name']
+        ssh_key_passphrase = ssh_profile_dict['sshkey_passphrase']
+        ssh_public_key = ssh_profile_dict['sshkey_public']
+        ssh_private_key = ssh_profile_dict['sshkey_private']
+        ssh_private_key_file = ssh_profile_dict['sshkey_private_file']
+        ssh_public_key_file = ssh_profile_dict['sshkey_public_file']
+        ssh_config_name = ssh_profile_dict['ssh_config_name']
+        ssh_config_content = ssh_profile_dict['ssh_config_content']
 
         # Populate the ssh_private_key variable from sqlite sshconfigdb if its empty and a filename is provided instead
-
         if bool(ssh_private_key) is False and bool(ssh_private_key_file):
-            with open(ssh_private_key_file, 'r') as f:
+            with open(os.path.expanduser(ssh_private_key_file), 'r') as f:
                 ssh_private_key = f.read()  # Read whole file in the file_content string
-            print(ssh_private_key)
+            # print(ssh_private_key)
         else:
             pass
 
         # update default default_ssh_connection_name with new session name
         if bool(ssh_connection_name) is not False:
             default_ssh_connection_name = ssh_connection_name
+            # app_settings.setValue('ssh_connection_name', str(default_ssh_connection_name))
+    except:
+        pass
 
-    except sqlite3.Error as error:
-        print("Failed to read single row from sqlite table", error)
-    finally:
-        if (sqliteConnection):
-            sqliteConnection.close()
-            print("The SQLite connection is closed")
-            pass
+    print('============End default_ssh_connection==================')
+
+
+default_ssh_connection(sshdb, default_ssh_connection_name)
 
 
 class InvalidValueError(Exception):
@@ -472,7 +562,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         self.policy = policy
         self.host_keys_settings = host_keys_settings
         self.ssh_client = self.get_ssh_client()
-        self.debug = self.settings.get('debug', False)
+        self.debug = self.settings.get('debug', True)
         self.font = self.settings.get('font', '')
         self.result = dict(id=None, status=None, encoding=None)
 
@@ -541,7 +631,8 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
     def get_args(self):
         global priority, ssh_id, ssh_priority, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_public_key_file, ssh_private_key_file
         try:
-            default_ssh_connection()
+            # default_ssh_connection()
+            default_ssh_connection(sshdb, default_ssh_connection_name)
         except:
             pass
 

@@ -135,7 +135,7 @@ class TabbedTerminal(QTabWidget):
                                      self.setTabToolTip(i, browser.page().title()))
         browser.titleChanged.connect(lambda _, i=i, browser=browser: self.setTabIcon(i, QtGui.QIcon(
             style.standardIcon(QStyle.SP_MessageBoxCritical))) if (
-                    "WebSSH" in browser.page().title()) else self.setTabIcon(i, QtGui.QIcon(
+                    "WizardWebSSH" in browser.page().title()) else self.setTabIcon(i, QtGui.QIcon(
             style.standardIcon(QStyle.SP_ComputerIcon))))
         # browser.loadFinished.connect(self.on_load_finished)
 
@@ -216,8 +216,8 @@ if __name__ == "__main__":
     dark_palette.setColor(QPalette.Disabled, QPalette.Text, Qt.darkGray)
     dark_palette.setColor(QPalette.Disabled, QPalette.Light, QColor(53, 53, 53))
     QApplication.setPalette(dark_palette)
-    app.setApplicationName("Wizard Assistant SSH")
-    app.setOrganizationName("Wizard Assistant")
+    app.setApplicationName("WizardAssistantDesktop")
+    app.setOrganizationName("WizardAssistant")
     app.setOrganizationDomain("wizardassistant.com")
     win = TabbedTerminal()
     win.show()

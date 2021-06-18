@@ -538,7 +538,7 @@ jQuery(function($){
       reset_wssh();
       log_status(e.reason, true);
       state = DISCONNECTED;
-      default_title = 'WebSSH';
+      default_title = 'WizardWebSSH';
       title_element.text = default_title;
     };
 
