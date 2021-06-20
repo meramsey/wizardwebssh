@@ -68,6 +68,8 @@ ssh_public_key_file = ''
 ssh_private_key_file = ''
 sshconfig_db = ''
 default_ssh_connection_name = ''
+ssh_config_hosts = []
+db_ssh_hosts = []
 
 # Platforms
 WINDOWS = (platform.system() == "Windows")
@@ -111,6 +113,7 @@ def paramiko_host_info(host):
         with open(user_config_file) as f:
             ssh_config.parse(f)
             o = ssh_config.lookup(host)
+            # print(o)
     # setup template
     con = {'ssh_group_name': 'default',
            'ssh_connection_name': host,
@@ -126,7 +129,7 @@ def paramiko_host_info(host):
            'sshkey_private': '',
            'sshkey_public_file': '',
            'sshkey_private_file': '',
-           'ssh_config_name': 'default',
+           'ssh_config_name': 'paramiko',
            'ssh_config_content': ''}
 
     if o:
@@ -134,21 +137,20 @@ def paramiko_host_info(host):
             con.update(HostName=o['hostname'])
         if 'user' in o.keys():
             con.update(ssh_username=o['user'])
-        if 'identityfile' in o.keys():
-            ident = o['identityfile']
-            if type(ident) is list:
-                ident = ident[0]
-                con.update(sshkey_private_file=ident)
-        if 'key_filename' in o.keys():
-            ident = o['identityfile']
-            con.update(sshkey_private_file=ident)
+        # if 'identityfile' in o.keys():
+        #     ident = o['identityfile']
+        #     if type(ident) is list:
+        #         ident = ident[0]
+        #         con.update(sshkey_private_file=ident)
+        # if 'key_filename' in o.keys():
+        #     ident = o['identityfile']
+        #     con.update(sshkey_private_file=ident)
         if 'port' in o.keys():
             con.update(Port=o['port'])
         if 'proxyjump' in o.keys():
             con.update(ProxyCommand=o['proxyjump'])
     print(
         f'Printing paramiko host lookup dict: {con} from {os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])))}')
-    # todo how should we handle lookups for stuff that doesn't exist vs returning default stuff
     return con
 
 
@@ -207,23 +209,32 @@ def get_default_ssh_connection_data(database_name, connection):
     return get_query_as_dict(query, database_name)
 
 
-def default_ssh_connection(db, connection):
+def default_ssh_connection(connection, db=sshdb):
     print('============BEGIN default_ssh_connection==================')
     global ssh_id, ssh_group, ssh_priority, default_ssh_connection_name, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_key_name, ssh_config_name, ssh_public_key_file, ssh_private_key_file
-    try:
+
+    ssh_profile_dict = None
+
+    if connection in db_ssh_hosts:
         print(f'Looking up connection {connection} via sshconfig_db')
         ssh_profile_dict = get_default_ssh_connection_data(db, connection)
-        print(f'Global ssh_hostname: {ssh_hostname}')
-        if ssh_profile_dict is None:
-            print(f'Looking up connection {connection} via sshconfig parser')
-            ssh_profile_dict = paramiko_host_info(connection)
-        # print(f"SSH Profile Dictionary: {ssh_profile_dict}")
+        print(f"SSH Profile Dictionary from sshconfig_db : {ssh_profile_dict}")
+    elif connection in ssh_config_hosts:
+        print(f'Looking up connection {connection} via sshconfig parser')
+        ssh_profile_dict = paramiko_host_info(connection)
+        print(f"SSH Profile Dictionary from sshconfig parser: {ssh_profile_dict}")
+    else:
+        print(f'Connection {connection} not in db_ssh_hosts or ssh_config_hosts')
+
+    if ssh_profile_dict is not None:
+        print(f"SSH Profile Dictionary: {ssh_profile_dict}")
         ssh_group = ssh_profile_dict['ssh_group_name']
         ssh_connection_name = ssh_profile_dict['ssh_connection_name']
         ssh_username = ssh_profile_dict['ssh_username']
         ssh_password = ssh_profile_dict['ssh_password']
         ssh_host = ssh_profile_dict['Host']
         ssh_hostname = ssh_profile_dict['HostName']
+        # print(f'Global ssh_hostname: {ssh_hostname}')
         ssh_port = ssh_profile_dict['Port']
         ssh_proxy_command = ssh_profile_dict['ProxyCommand']
         ssh_key_name = ssh_profile_dict['sshkey_name']
@@ -237,18 +248,17 @@ def default_ssh_connection(db, connection):
 
         # Populate the ssh_private_key variable from sqlite sshconfigdb if its empty and a filename is provided instead
         if bool(ssh_private_key) is False and bool(ssh_private_key_file):
-            with open(os.path.expanduser(ssh_private_key_file), 'r') as f:
-                ssh_private_key = f.read()  # Read whole file in the file_content string
-            # print(ssh_private_key)
+            if ssh_config_name == "default":
+                with open(os.path.expanduser(ssh_private_key_file), 'r') as f:
+                    ssh_private_key = f.read()  # Read whole file in the file_content string
+                # print(ssh_private_key)
         else:
             pass
 
         # update default default_ssh_connection_name with new session name
         if bool(ssh_connection_name) is not False:
             default_ssh_connection_name = ssh_connection_name
-            # app_settings.setValue('ssh_connection_name', str(default_ssh_connection_name))
-    except:
-        pass
+            settings.setValue('ssh_connection_name', str(default_ssh_connection_name))
 
     print('============End default_ssh_connection==================')
 
@@ -720,6 +730,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
 
         term = self.get_argument('term', u'') or u'xterm'
         chan = ssh.invoke_shell(term=term)
+        logging.info(f'Channel to channel: {chan} ')
         chan.setblocking(0)
         worker = Worker(self.loop, ssh, chan, dst_addr)
         worker.encoding = options.encoding if options.encoding else \
