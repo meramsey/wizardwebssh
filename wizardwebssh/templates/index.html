@@ -61,14 +61,11 @@
             <input class="form-control" type="password" id="password" name="password" value="">
           </div>
         </div>
-        <div class="row">
-        <div class="col">
-            <label for="privatekey">SSH Private Key</label>
-          <div class="custom-file">
-            <input type="file" class="custom-file-input form-control" id="privatekey">
-            <label class="custom-file-label" for="privatekey">Choose file</label>
+          <div class="row">
+          <div class="col">
+            <label for="privatekey">Private Key</label>
+            <input class="form-control" type="file" id="privatekey" name="privatekey" value="">
           </div>
-        </div>
           <div class="col">
             <label for="Passphrase">Passphrase</label>
             <input class="form-control" type="password" id="passphrase" name="passphrase" value="">
@@ -95,8 +92,8 @@
     </div>
 
     <script src="static/js/jquery.min.js"></script>
-    <script src="static/js/popper.min.js"></script>
-    <script src="static/js/bootstrap.min.js"></script>
+{#    <script src="static/js/popper.min.js"></script>#}
+    <script src="static/js/bootstrap.bundle.min.js"></script>
     <script src="static/js/xterm.min.js"></script>
     <script src="static/js/xterm-addon-fit.min.js"></script>
     <script src="static/js/main.js"></script>
