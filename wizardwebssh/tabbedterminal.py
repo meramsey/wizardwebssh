@@ -3,12 +3,12 @@ import sqlite3
 import threading
 import time
 
-from PyQt5 import QtGui, QtWidgets, QtCore
-from PyQt5.QtCore import pyqtSignal as Signal, pyqtSlot as Slot, Qt
-from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QIcon, QPalette, QColor
-from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
-from PyQt5.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton, QStyle
+from PyQt6 import QtGui, QtWidgets, QtCore
+from PyQt6.QtCore import pyqtSignal as Signal, pyqtSlot as Slot, Qt
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QIcon, QPalette, QColor
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton, QStyle
 
 # if platform.system() == "Linux":
 #     try:
@@ -79,7 +79,7 @@ class TabbedTerminal(QTabWidget):
         super(TabbedTerminal, self).__init__(parent)
 
         self.setDocumentMode(True)
-        self.setTabPosition(QTabWidget.South)
+        self.setTabPosition(QTabWidget.TabPosition.South)
         self._new_button = QPushButton(self)
         self._new_button.setText("New SSH Session")
         self._new_button.clicked.connect(self.add_new_tab)
@@ -134,9 +134,9 @@ class TabbedTerminal(QTabWidget):
         browser.titleChanged.connect(lambda _, i=i, browser=browser:
                                      self.setTabToolTip(i, browser.page().title()))
         browser.titleChanged.connect(lambda _, i=i, browser=browser: self.setTabIcon(i, QtGui.QIcon(
-            style.standardIcon(QStyle.SP_MessageBoxCritical))) if (
+            style.standardIcon(QStyle.StandardPixmap.SP_MessageBoxCritical))) if (
                     "WizardWebSSH" in browser.page().title()) else self.setTabIcon(i, QtGui.QIcon(
-            style.standardIcon(QStyle.SP_ComputerIcon))))
+            style.standardIcon(QStyle.StandardPixmap.SP_ComputerIcon))))
         # browser.loadFinished.connect(self.on_load_finished)
 
     def tab_open_doubleclick(self, i):
@@ -197,28 +197,28 @@ if __name__ == "__main__":
     #
     # # Now use a palette to switch to dark colors:
     dark_palette = QPalette()
-    dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.WindowText, Qt.white)
-    dark_palette.setColor(QPalette.Base, QColor(35, 35, 35))
-    dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.ToolTipBase, QColor(25, 25, 25))
-    dark_palette.setColor(QPalette.ToolTipText, Qt.white)
-    dark_palette.setColor(QPalette.Text, Qt.white)
-    dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.ButtonText, Qt.white)
-    dark_palette.setColor(QPalette.BrightText, Qt.red)
-    dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
-    dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
-    dark_palette.setColor(QPalette.HighlightedText, QColor(35, 35, 35))
-    dark_palette.setColor(QPalette.Active, QPalette.Button, QColor(53, 53, 53))
-    dark_palette.setColor(QPalette.Disabled, QPalette.ButtonText, Qt.darkGray)
-    dark_palette.setColor(QPalette.Disabled, QPalette.WindowText, Qt.darkGray)
-    dark_palette.setColor(QPalette.Disabled, QPalette.Text, Qt.darkGray)
-    dark_palette.setColor(QPalette.Disabled, QPalette.Light, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ColorRole.Window, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.white)
+    dark_palette.setColor(QPalette.ColorRole.Base, QColor(35, 35, 35))
+    dark_palette.setColor(QPalette.ColorRole.AlternateBase, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ColorRole.ToolTipBase, QColor(25, 25, 25))
+    dark_palette.setColor(QPalette.ColorRole.ToolTipText, Qt.GlobalColor.white)
+    dark_palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.white)
+    dark_palette.setColor(QPalette.ColorRole.Button, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.white)
+    dark_palette.setColor(QPalette.ColorRole.BrightText, Qt.GlobalColor.red)
+    dark_palette.setColor(QPalette.ColorRole.Link, QColor(42, 130, 218))
+    dark_palette.setColor(QPalette.ColorRole.Highlight, QColor(42, 130, 218))
+    dark_palette.setColor(QPalette.ColorRole.HighlightedText, QColor(35, 35, 35))
+    dark_palette.setColor(QPalette.ColorGroup.Active, QPalette.ColorRole.Button, QColor(53, 53, 53))
+    dark_palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.ButtonText, Qt.GlobalColor.darkGray)
+    dark_palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.WindowText, Qt.GlobalColor.darkGray)
+    dark_palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Text, Qt.GlobalColor.darkGray)
+    dark_palette.setColor(QPalette.ColorGroup.Disabled, QPalette.ColorRole.Light, QColor(53, 53, 53))
     QApplication.setPalette(dark_palette)
     app.setApplicationName("WizardAssistantDesktop")
     app.setOrganizationName("WizardAssistant")
     app.setOrganizationDomain("wizardassistant.com")
     win = TabbedTerminal()
     win.show()
-    app.exec_()
+    app.exec()
