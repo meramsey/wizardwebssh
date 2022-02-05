@@ -44,6 +44,7 @@ separated by comma;
 '*': wildcard policy, matches any domain, allowed in debug mode only.''')
 define('wpintvl', type=int, default=0, help='Websocket ping interval')
 define('timeout', type=int, default=3, help='SSH connection timeout')
+define('auth_timeout', type=int, default=120, help='SSH connection auth timeout')
 define('allow_agent', type=bool, default=False, help='SSH Agent support')
 define('look_for_keys', type=bool, default=False, help='Look for SSH keys when using SSH Agent')
 define('delay', type=int, default=0, help='The delay to call recycle_worker')

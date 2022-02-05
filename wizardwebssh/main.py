@@ -6,7 +6,7 @@ import socket
 from contextlib import closing
 import tornado.web
 import tornado.ioloop
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 from tornado.options import options
 from wizardwebssh import handler
 from wizardwebssh.handler import IndexHandler, WsockHandler, NotFoundHandler

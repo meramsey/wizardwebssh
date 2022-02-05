@@ -14,9 +14,9 @@ from pathlib import Path
 import paramiko
 import tornado.web
 from concurrent.futures import ThreadPoolExecutor
-from PyQt5 import QtCore, QtSql
-from PyQt5.QtCore import QStandardPaths
-from PyQt5.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
+from PyQt6 import QtCore, QtSql
+from PyQt6.QtCore import QStandardPaths
+from PyQt6.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
 from paramiko import SSHException
 from tornado.ioloop import IOLoop
 from tornado.options import options
@@ -89,7 +89,7 @@ if settings.contains("sshconfig_db"):
 else:
     print('sshconfig_db not found in config. Using default')
     sshconfig_db = QStandardPaths.writableLocation(
-        QStandardPaths.AppConfigLocation) / config_data_dir / "wizardwebssh.db"
+        QStandardPaths.StandardLocation.AppConfigLocation) / config_data_dir / "wizardwebssh.db"
     settings.setValue('sshconfig_db', str(sshconfig_db))
     pass
 
@@ -718,7 +718,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
 
         try:
             ssh.connect(*args, allow_agent=options.allow_agent, look_for_keys=options.look_for_keys,
-                        timeout=options.timeout)
+                        timeout=options.timeout, auth_timeout=options.auth_timeout)
         except socket.error:
             raise ValueError('Unable to connect to {}:{}'.format(*dst_addr))
         except paramiko.BadAuthenticationType:
