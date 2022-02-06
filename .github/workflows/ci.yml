@@ -50,7 +50,7 @@ jobs:
         key: quality-poetry-cache
 
     - name: Set up the project
-      run: poetry install -vv
+      run: poetry install -vv --extras pyqt6
 
     - name: Check if the documentation builds correctly
       run: poetry run duty check-docs
@@ -94,7 +94,7 @@ jobs:
         key: tests-poetry-cache-${{ matrix.os }}-py${{ matrix.python-version }}
 
     - name: Set up the project
-      run: poetry install -vv || { rm -rf .poetry_cache/virtualenvs/*; poetry install -vv; }
+      run: poetry install -vv --extras pyqt6 || { rm -rf .poetry_cache/virtualenvs/*; poetry install -vv --extras pyqt6 ; }
 
     - name: Run the test suite
       run: poetry run duty test
