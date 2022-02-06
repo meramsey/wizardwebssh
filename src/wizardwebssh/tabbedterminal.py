@@ -16,6 +16,7 @@ try:
     from PyQt6.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton, QStyle
 except Exception as e:
     print(f"Exception: {e}")
+
 # if platform.system() == "Linux":
 #     try:
 #          import ctypes
@@ -27,16 +28,21 @@ except Exception as e:
 
 free_port = "8889"
 
-settings = QtCore.QSettings("WizardAssistant", "WizardAssistantDesktop")
+try:
 
-if settings.contains("wizardwebsshport"):
-    # there is the key in QSettings
-    # print('Checking for wizardwebsshport in config')
-    wizardwebsshport = settings.value("wizardwebsshport")
-    # print('Found wizardwebsshport port in config:' + wizardwebsshport)
-    free_port = wizardwebsshport
-else:
-    print("wizardwebsshport not found in config")
+    settings = QtCore.QSettings("WizardAssistant", "WizardAssistantDesktop")
+
+    if settings.contains("wizardwebsshport"):
+        # there is the key in QSettings
+        # print('Checking for wizardwebsshport in config')
+        wizardwebsshport = settings.value("wizardwebsshport")
+        # print('Found wizardwebsshport port in config:' + wizardwebsshport)
+        free_port = wizardwebsshport
+    else:
+        print("wizardwebsshport not found in config")
+        pass
+except Exception as e:
+    print(f"Exception : {e}")
     pass
 
 try:
