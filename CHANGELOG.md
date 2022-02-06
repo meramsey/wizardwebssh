@@ -15,4 +15,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Features
 - refactored ([9cbb3be](https://github.com/meramsey/wizardwebssh/commit/9cbb3be4c2bfa307c8fe938ae0cdcce6bbbf5758) by Michael Ramsey).
 - bump dependencies for pyqt5 to pyqt6 ([0e44c6e](https://github.com/meramsey/wizardwebssh/commit/0e44c6e9b2eead7509d2a1715f39fd8d7bfb04c0) by Michael Ramsey).
-- bump depends for xterm bootstrap popper ([6be2d5a](https://github.com/meramsey/wizardwebssh/commit/6be2d5a2e15a70a81d7000eb2e14626ea478e6bc) by Michael Ramsey).
+- bump dependencies for xterm bootstrap popper ([6be2d5a](https://github.com/meramsey/wizardwebssh/commit/6be2d5a2e15a70a81d7000eb2e14626ea478e6bc) by Michael Ramsey).
