@@ -1,5 +1,5 @@
 # flake8: noqa
-"""Handler"""
+"""Handler for websocket stuffs."""
 import io
 import json
 import logging
@@ -18,13 +18,17 @@ from pathlib import Path
 import paramiko
 import tornado.web
 from concurrent.futures import ThreadPoolExecutor
-from PyQt6 import QtCore, QtSql
-from PyQt6.QtCore import QStandardPaths
-from PyQt6.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
 from paramiko import SSHException
 from tornado.ioloop import IOLoop
 from tornado.options import options
 from tornado.process import cpu_count
+
+try:
+    from PyQt6 import QtCore, QtSql
+    from PyQt6.QtCore import QStandardPaths
+    from PyQt6.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
+except ImportError:
+    pass
 from wizardwebssh.utils import (
     is_valid_ip_address,
     is_valid_port,
@@ -122,6 +126,14 @@ ssh_target_db = str(sshconfig_db)
 
 
 def paramiko_host_info(host):
+    """
+    Get SSH host information via Paramiko Parser for terminal.
+    Args:
+        host (): SSH host from ssh config file
+
+    Returns: dictionary with connection info parsed from config
+
+    """
     ssh_config = paramiko.SSHConfig()
     user_config_file = os.path.expanduser("~/.ssh/config")
     if os.path.exists(user_config_file):
@@ -174,7 +186,7 @@ def paramiko_host_info(host):
 
 def get_query_as_dict(query, database_name):
     """
-    Get QSqlQuery  for single record as a dictionary with the columns as the keys.
+    Get QSqlQuery for single record as a dictionary with the columns as the keys.
 
     Args:
         query (): QSqlQuery to use.
