@@ -6,13 +6,16 @@ import threading
 import time
 import os
 import sys
-from PyQt6 import QtGui, QtWidgets, QtCore
-from PyQt6.QtCore import pyqtSignal as Signal, pyqtSlot as Slot, Qt
-from PyQt6.QtCore import QUrl
-from PyQt6.QtGui import QIcon, QPalette, QColor
-from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton, QStyle
 
+try:
+    from PyQt6 import QtGui, QtWidgets, QtCore
+    from PyQt6.QtCore import pyqtSignal as Signal, pyqtSlot as Slot, Qt
+    from PyQt6.QtCore import QUrl
+    from PyQt6.QtGui import QIcon, QPalette, QColor
+    from PyQt6.QtWebEngineWidgets import QWebEngineView
+    from PyQt6.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton, QStyle
+except Exception as e:
+    print(f"Exception: {e}")
 # if platform.system() == "Linux":
 #     try:
 #          import ctypes
