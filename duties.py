@@ -14,7 +14,6 @@ from git_changelog.build import Changelog, Version
 from jinja2.sandbox import SandboxedEnvironment
 
 PY_SRC_PATHS = (Path(_) for _ in ("src", "tests", "duties.py", "docs/macros.py"))
-# PY_SRC_PATHS = (Path(_) for _ in ("wizardwebssh", "tests", "duties.py", "docs/macros.py"))
 PY_SRC_LIST = tuple(str(_) for _ in PY_SRC_PATHS)
 PY_SRC = " ".join(PY_SRC_LIST)
 TESTING = os.environ.get("TESTING", "0") in {"1", "true"}
