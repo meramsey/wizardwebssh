@@ -94,33 +94,36 @@ MAC = platform.system() == "Darwin"
 
 platform = platform.system()  # type: ignore
 
-settings = QtCore.QSettings("WizardAssistant", "WizardAssistantDesktop")
-config_data_dir = Path("WizardAssistant/WizardAssistantDesktop")
+try:
+    settings = QtCore.QSettings("WizardAssistant", "WizardAssistantDesktop")
+    config_data_dir = Path("WizardAssistant/WizardAssistantDesktop")
 
-if settings.contains("sshconfig_db"):
-    # there is the key in QSettings
-    print("Checking for sshconfig_db location preference in config")
-    sshconfig_db = settings.value("sshconfig_db")
-    print("Found sshconfig_db in config:" + sshconfig_db)
-else:
-    print("sshconfig_db not found in config. Using default")
-    sshconfig_db = (
-        QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppConfigLocation)  # type: ignore
-        / config_data_dir
-        / "wizardwebssh.db"
-    )
-    settings.setValue("sshconfig_db", str(sshconfig_db))
-    pass
+    if settings.contains("sshconfig_db"):
+        # there is the key in QSettings
+        print("Checking for sshconfig_db location preference in config")
+        sshconfig_db = settings.value("sshconfig_db")
+        print("Found sshconfig_db in config:" + sshconfig_db)
+    else:
+        print("sshconfig_db not found in config. Using default")
+        sshconfig_db = (
+            QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppConfigLocation)  # type: ignore
+            / config_data_dir
+            / "wizardwebssh.db"
+        )
+        settings.setValue("sshconfig_db", str(sshconfig_db))
+        pass
 
-if settings.contains("ssh_connection_name"):
-    # there is the key in QSettings
-    print("Checking for sshconfig_db ssh_connection_name preference in config")
-    default_ssh_connection_name = settings.value("ssh_connection_name")
-    print("Found default_ssh_connection_name in config:" + default_ssh_connection_name)
+    if settings.contains("ssh_connection_name"):
+        # there is the key in QSettings
+        print("Checking for sshconfig_db ssh_connection_name preference in config")
+        default_ssh_connection_name = settings.value("ssh_connection_name")
+        print("Found default_ssh_connection_name in config:" + default_ssh_connection_name)
 
-sshdb = QSqlDatabase.addDatabase("QSQLITE", "SSHCONFIG")
-sshdb.setDatabaseName(str(sshconfig_db))
-sshdb.open()
+    sshdb = QSqlDatabase.addDatabase("QSQLITE", "SSHCONFIG")
+    sshdb.setDatabaseName(str(sshconfig_db))
+    sshdb.open()
+except Exception as e:
+    print(f"Exception: {e}")
 
 ssh_target_db = str(sshconfig_db)
 
@@ -297,7 +300,10 @@ def default_ssh_connection(connection, db=sshdb):
     print("============End default_ssh_connection==================")
 
 
-default_ssh_connection(sshdb, default_ssh_connection_name)
+try:
+    default_ssh_connection(sshdb, default_ssh_connection_name)
+except Exception as e:
+    print(f"Exception: {e}")
 
 
 class InvalidValueError(Exception):
