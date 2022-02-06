@@ -1,4 +1,4 @@
-## WizardWebSSH
+## Wizard Web SSH
 
 [![ci](https://github.com/meramsey/wizardwebssh/workflows/ci/badge.svg)](https://github.com/meramsey/wizardwebssh/actions?query=workflow%3Aci)
 [![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://meramsey.github.io/wizardwebssh/)
