@@ -17,7 +17,7 @@ nav:
   - main.py: reference/main.md
   - policy.py: reference/policy.md
   - settings.py: reference/settings.md
-  - tabbedterminal.py: reference/tabbedterminal.md
+#   - tabbedterminal.py: reference/tabbedterminal.md
   - utils.py: reference/utils.md
   - worker.py: reference/worker.md
 - Development:
