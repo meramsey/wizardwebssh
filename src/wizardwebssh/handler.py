@@ -64,7 +64,7 @@ swallow_http_errors = True
 redirecting = None
 
 duo_auth = False
-
+sshdb = None
 ssh_id = ""
 ssh_group = ""
 ssh_priority = ""
@@ -246,7 +246,9 @@ def get_default_ssh_connection_data(database_name, connection):
     return get_query_as_dict(query, database_name)
 
 
-def default_ssh_connection(connection, db=sshdb):
+def default_ssh_connection(connection, db=None):
+    if db is None and sshdb is not None:
+        db = sshdb
     print("============BEGIN default_ssh_connection==================")
     global ssh_id, ssh_group, ssh_priority, default_ssh_connection_name, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_key_name, ssh_config_name, ssh_public_key_file, ssh_private_key_file
 
