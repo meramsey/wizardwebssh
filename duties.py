@@ -108,7 +108,7 @@ def update_changelog(
     if len(changelog.versions_list) == 1:
         last_version = changelog.versions_list[0]
         if last_version.planned_tag is None:
-            planned_tag = "0.1.0"
+            planned_tag = "1.7.4"
             last_version.tag = planned_tag
             last_version.url += planned_tag
             last_version.compare_url = last_version.compare_url.replace("HEAD", planned_tag)
