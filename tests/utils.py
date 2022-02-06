@@ -12,36 +12,32 @@ def encode_multipart_formdata(fields, files):
     Return (content_type, body) ready for httplib.HTTP instance
     """
     boundary = uuid4().hex
-    CRLF = '\r\n'
+    CRLF = "\r\n"
     L = []
     for (key, value) in fields:
-        L.append('--' + boundary)
+        L.append("--" + boundary)
         L.append('Content-Disposition: form-data; name="%s"' % key)
-        L.append('')
+        L.append("")
         L.append(value)
     for (key, filename, value) in files:
-        L.append('--' + boundary)
-        L.append(
-            'Content-Disposition: form-data; name="%s"; filename="%s"' % (
-                key, filename
-            )
-        )
-        L.append('Content-Type: %s' % get_content_type(filename))
-        L.append('')
+        L.append("--" + boundary)
+        L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
+        L.append("Content-Type: %s" % get_content_type(filename))
+        L.append("")
         L.append(value)
-    L.append('--' + boundary + '--')
-    L.append('')
+    L.append("--" + boundary + "--")
+    L.append("")
     body = CRLF.join(L)
-    content_type = 'multipart/form-data; boundary=%s' % boundary
+    content_type = "multipart/form-data; boundary=%s" % boundary
     return content_type, body
 
 
 def get_content_type(filename):
-    return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+    return mimetypes.guess_type(filename)[0] or "application/octet-stream"
 
 
-def read_file(path, encoding='utf-8'):
-    with open(path, 'rb') as f:
+def read_file(path, encoding="utf-8"):
+    with open(path, "rb") as f:
         data = f.read()
         if encoding is None:
             return data
@@ -49,4 +45,4 @@ def read_file(path, encoding='utf-8'):
 
 
 def make_tests_data_path(filename):
-    return os.path.join(base_dir, 'tests', 'data', filename)
+    return os.path.join(base_dir, "tests", "data", filename)

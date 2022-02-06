@@ -1,8 +1,50 @@
-## WebSSH
+## wizardwebssh
 
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/wizardwebssh.svg)
-![PyPI](https://img.shields.io/pypi/v/wizardwebssh.svg)
+[![ci](https://github.com/meramsey/wizardwebssh/workflows/ci/badge.svg)](https://github.com/meramsey/wizardwebssh/actions?query=workflow%3Aci)
+[![documentation](https://img.shields.io/badge/docs-mkdocs%20material-blue.svg?style=flat)](https://meramsey.github.io/wizardwebssh/)
+[![pypi version](https://img.shields.io/pypi/v/wizardwebssh.svg)](https://pypi.org/project/wizardwebssh/)
+[![gitter](https://badges.gitter.im/join%20chat.svg)](https://gitter.im/wizardwebssh/community)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+Web based ssh client
+
+## Requirements
+
+wizardwebssh requires Python 3.6 or above.
+
+<details>
+<summary>To install Python 3.6, I recommend using <a href="https://github.com/pyenv/pyenv"><code>pyenv</code></a>.</summary>
+
+```bash
+# install pyenv
+git clone https://github.com/pyenv/pyenv ~/.pyenv
+
+# setup pyenv (you should also put these three lines in .bashrc or similar)
+export PATH="${HOME}/.pyenv/bin:${PATH}"
+export PYENV_ROOT="${HOME}/.pyenv"
+eval "$(pyenv init -)"
+
+# install Python 3.6
+pyenv install 3.6.12
+
+# make it available globally
+pyenv global system 3.6.12
+```
+</details>
+
+## Installation
+
+With `pip`:
+```bash
+python3.6 -m pip install wizardwebssh
+```
+
+With [`pipx`](https://github.com/pipxproject/pipx):
+```bash
+python3.6 -m pip install --user pipx
+
+pipx install --python python3.6 wizardwebssh
+```
 
 ### Introduction
 

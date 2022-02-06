@@ -22,7 +22,7 @@ var/
 *.egg
 
 # PyInstaller
-#  Usually these files are written by a python script from a template 
+#  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
@@ -94,13 +94,17 @@ known_hosts
 
 *.iml
 modules.xml
-.idea/misc.xml 
+.idea/misc.xml
 *.ipr
 .idea/
 mydjangosite/.idea/
 /venv/
 /stats.txt
 venv/
-__pycache__/
 wizardassistant-new.db
 wizardassistant.db
+.coverage*
+pip-wheel-metadata/
+.mypy_cache/
+site/
+.venv/

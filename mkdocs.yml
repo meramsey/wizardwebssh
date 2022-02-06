@@ -1,0 +1,65 @@
+site_name: wizardwebssh
+site_description: Web based ssh client
+site_url: https://meramsey.github.io/wizardwebssh
+repo_url: https://github.com/meramsey/wizardwebssh
+repo_name: meramsey/wizardwebssh
+site_dir: site
+
+nav:
+- Home:
+  - Overview: index.md
+  - Changelog: changelog.md
+  - Credits: credits.md
+  - License: license.md
+- Code Reference:
+  - cli.py: reference/cli.md
+  - handler.py: reference/handler.md
+  - main.py: reference/main.md
+  - policy.py: reference/policy.md
+  - settings.py: reference/settings.md
+  - tabbedterminal.py: reference/tabbedterminal.md
+  - utils.py: reference/utils.md
+  - worker.py: reference/worker.md
+- Development:
+  - Contributing: contributing.md
+  - Code of Conduct: code_of_conduct.md
+  - Coverage report: coverage.md
+
+theme:
+  name: material
+  features:
+  - navigation.tabs
+  palette:
+    scheme: slate
+    primary: teal
+    accent: purple
+
+extra_css:
+- css/mkdocstrings.css
+
+markdown_extensions:
+- admonition
+- pymdownx.emoji
+- pymdownx.magiclink
+- pymdownx.snippets:
+    check_paths: true
+- pymdownx.superfences
+- pymdownx.tabbed
+- pymdownx.tasklist
+- toc:
+    permalink: true
+
+plugins:
+- search
+- coverage:
+    html_report_dir: build/coverage
+- mkdocstrings:
+    handlers:
+      python:
+        setup_commands:
+        - import sys
+        - sys.path.insert(0, "src/wizardwebssh")
+    watch:
+    - src/wizardwebssh
+- macros:
+    module_name: docs/macros

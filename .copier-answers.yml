@@ -1,0 +1,19 @@
+# Changes here will be overwritten by Copier
+_commit: 0.4.0
+_src_path: gh:pawamoy/copier-poetry
+author_email: mike@hackerdise.me
+author_fullname: Michael Ramsey
+author_username: meramsey
+copyright_date: '2019'
+copyright_holder: Michael Ramsey
+copyright_holder_email: mike@hackerdise.me
+copyright_license: MIT License
+project_description: Web based ssh client
+project_name: wizardwebssh
+python_package_command_line_name: wssh
+python_package_distribution_name: wizardwebssh
+python_package_import_name: wizardwebssh
+repository_name: wizardwebssh
+repository_namespace: meramsey
+repository_provider: github.com
+use_precommit: true
