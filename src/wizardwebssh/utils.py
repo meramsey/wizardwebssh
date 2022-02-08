@@ -3,7 +3,6 @@
 import ipaddress
 import os
 import re
-import sys
 
 import tomlkit
 

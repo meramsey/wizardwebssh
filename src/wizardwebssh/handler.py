@@ -4,45 +4,44 @@ import io
 import json
 import logging
 import os
-import sys
 import platform
 import socket
 import struct
+import sys
 import traceback
 import weakref
+from binascii import hexlify
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 from typing import List
 
-from binascii import hexlify
-import sqlite3
-from pathlib import Path
 import paramiko
 import tornado.web
-from concurrent.futures import ThreadPoolExecutor
 from paramiko import SSHException
 from tornado.ioloop import IOLoop
 from tornado.options import options
 from tornado.process import cpu_count
 
 try:
-    from PyQt6 import QtCore, QtSql
+    from PyQt6 import QtCore
     from PyQt6.QtCore import QStandardPaths
-    from PyQt6.QtSql import QSqlDatabase, QSqlQuery, QSqlTableModel
+    from PyQt6.QtSql import QSqlDatabase, QSqlQuery
 except ImportError:
     pass
 from wizardwebssh.utils import (
-    is_valid_ip_address,
-    is_valid_port,
-    is_valid_hostname,
-    to_bytes,
-    to_str,
-    to_int,
-    to_ip_address,
     UnicodeType,
     is_ip_hostname,
     is_same_primary_domain,
     is_valid_encoding,
+    is_valid_hostname,
+    is_valid_ip_address,
+    is_valid_port,
+    to_bytes,
+    to_int,
+    to_ip_address,
+    to_str,
 )
-from wizardwebssh.worker import Worker, recycle_worker, clients
+from wizardwebssh.worker import Worker, clients, recycle_worker
 
 try:
     from json.decoder import JSONDecodeError
@@ -111,7 +110,6 @@ try:
             / "wizardwebssh.db"
         )
         settings.setValue("sshconfig_db", str(sshconfig_db))
-        pass
 
     if settings.contains("ssh_connection_name"):
         # there is the key in QSettings
@@ -217,7 +215,6 @@ def get_query_as_dict(query, database_name):
                 return row_values
     except Exception as e:
         print(f"Exception: {e}")
-        pass
     return row_values
 
 

@@ -23,14 +23,13 @@ import socket
 
 # import sys
 import threading
+from binascii import hexlify
 
 # import traceback
 import paramiko
+from paramiko.py3compat import decodebytes, u
 
-from binascii import hexlify
-from paramiko.py3compat import u, decodebytes
 from tests.utils import make_tests_data_path
-
 
 # setup logging
 paramiko.util.log_to_file(make_tests_data_path("sshserver.log"))

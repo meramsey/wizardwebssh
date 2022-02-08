@@ -2,13 +2,14 @@
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool]
+
 [tool.black]
 line-length = 120
 exclude = "tests/fixtures"
 
 [tool.isort]
 line_length = 120
-not_skip = "__init__.py"
 multi_line_output = 3
 force_single_line = false
 balanced_wrapping = true
@@ -33,56 +34,112 @@ python = ">=3.6.2,<4.0"
 paramiko = "^2.9.2"
 tornado = "6.1"
 tomlkit = "^0.9.0"
-PyQt6 = {version = "^6.2.3", optional = true}
-PyQt6-Qt6 = {version = "^6.2.3", optional = true}
-PyQt6-sip = {version = "^13.2.1", optional = true}
-PyQt6-WebEngine = {version = "^6.2.1", optional = true}
-PyQt6-WebEngine-Qt6 = {version = "^6.2.3", optional = true}
+PyQt6 = "6.2.3"
+PyQt6-Qt6 = "6.2.3"
+PyQt6-sip = "13.2.1"
+PyQt6-WebEngine = "6.2.1"
+PyQt6-WebEngine-Qt6 = "6.2.3"
+toml = ">=0.10.2"
 
 [tool.poetry.dev-dependencies]
-autoflake = ">=1.4"
-black = ">=21.12b0"
-isort = ">=5.7.0"
-mypy = ">=0.812"
-pytest = ">=6.2.2"
-pytest-cov = ">=2.11.1"
-pytest-randomly = ">=3.5.0"
-pytest-sugar = ">=0.9.4"
-pytest-xdist = ">=2.2.0"
-types-toml = ">=0.10.1"
-duty = ">=0.6.0"
-git-changelog = ">=0.5.0"
-httpx = ">=0.16.1"
-jinja2-cli = ">=0.7.0"
-toml = ">=0.10.2"
-darglint = ">=1.5.8"
-flake8 = ">=3.7.0"
-flake8-bandit = ">=2.1.2"
-flake8-black = ">=0.2.1"
-flake8-bugbear = ">=20.11.1"
-flake8-builtins = ">=1.5.3"
-flake8-comprehensions = ">=3.3.1"
-flake8-docstrings = ">=1.5.0"
-flake8-pytest-style = ">=1.3.0"
-flake8-string-format = ">=0.3.0"
-flake8-tidy-imports = ">=4.2.1"
-flake8-variables-names = ">=0.0.4"
-pep8-naming = ">=0.11.1"
-pydocstyle = ">=6.1.1"
-wps-light = ">=0.15.2"
-mkdocs = ">=1.2.2"
-mkdocs-coverage = ">=0.2.1"
-mkdocs-macros-plugin = ">=0.5.0"
-mkdocs-material = ">=6.2.7"
-mkdocstrings = ">=0.16.2"
-types-mock = "^4.0.10"
-types-paramiko = "^2.8.12"
-types-cryptography = "^3.3.15"
-types-ipaddress = "^1.0.8"
-types-enum34 = "^1.1.8"
-
-[tool.poetry.extras]
-pyqt6 = ["PyQt6", "PyQt6-Qt6", "PyQt6-sip", "PyQt6-WebEngine", "PyQt6-WebEngine-Qt6"]
+mypy = "*"
+pytest = "*"
+pytest-cov = "*"
+pytest-randomly = "*"
+pytest-sugar = "*"
+pytest-xdist = "*"
+types-toml = "*"
+duty = "*"
+git-changelog = "*"
+httpx = "*"
+jinja2-cli = "*"
+toml = "*"
+pydocstyle = "*"
+wps-light = "*"
+mkdocs = "*"
+mkdocs-coverage = "*"
+mkdocs-macros-plugin = "*"
+mkdocs-material = "*"
+mkdocstrings = "*"
+types-mock = "*"
+types-paramiko = "*"
+types-cryptography = "*"
+types-ipaddress = "*"
+types-enum34 = "*"
 
 [tool.poetry.scripts]
 wssh = "wizardwebssh.main:main"
+
+[tool.pyprojectx]
+poetry = "poetry==1.1.12"
+black = "black"
+isort = "isort"
+pylint = "pylint"
+darglint = "darglint"
+pydocstyle = ">=6.1.1"
+pre-commit = "pre-commit"
+flake8 = """
+autoflake
+flake8
+flake8-bandit
+pep8-naming
+flake8-isort
+flake8-pytest-style
+flake8-bandit
+flake8-black
+flake8-bugbear
+flake8-builtins
+flake8-comprehensions
+flake8-docstrings
+flake8-pytest-style
+flake8-string-format
+flake8-tidy-imports
+flake8-variables-names"""
+
+[tool.pyprojectx.aliases]
+pw = "px"
+install = "poetry install"
+run = "poetry run"
+outdated = "poetry show --outdated"
+clean = """\
+rm -rf .coverage*
+rm -rf .mypy_cache
+rm -rf .pytest_cache
+rm -rf tests/.pytest_cache
+rm -rf build
+rm -rf dist
+rm -rf pip-wheel-metadata
+rm -rf site
+find . -type d -name __pycache__ | xargs rm -rf
+find . -name '*.rej' -delete
+rm -r .venv"""
+clean-all = "pw@ clean && rm -rf .pyprojectx"
+black = "black src tests duties.py docs/macros.py"
+isort = "isort src tests duties.py docs/macros.py"
+format = """\
+flake8: autoflake -ir --exclude tests/fixtures --remove-all-unused-imports src tests duties.py docs/macros.py
+isort src tests duties.py docs/macros.py
+black src tests duties.py docs/macros.py
+"""
+test = "poetry run pytest -c config/pytest.ini tests"
+check-pylint = "pylint src tests docs/macros.py"
+check-black = "black src tests docs/macros.py --check"
+check = "pw@ check-black && pw@ check-pylint && pw@ test"
+check-all = "pw@ check_code_quality && pw@ check_types && pw@ check_docs && pw@ check_safety"
+check_types = "mypy --config-file config/mypy.ini src tests duties.py docs/macros.py"
+check_safety = "poetry export -f requirements.txt --without-hashes | safety check --stdin --full-report"
+check_code_quality = "flake8 --config=config/flake8.ini src tests duties.py docs/macros.py"
+check_docs = """\
+mkdir -p build/coverage
+touch build/coverage/index.html
+mkdocs build -s"""
+docs = "mkdocs build"
+docs_serve = "mkdocs serve -a 127.0.0.1:8000"
+docs_deploy = "mkdocs gh-deploy"
+change_log = "poetry run duty changelog"
+release = "poetry run duty release"
+build = "pw@ install && pw@ check-all && pw@ poetry build"
+
+[tool.pyprojectx.os.win.aliases]
+clean = "rmdir /s/q .venv & rmdir /s/q .pytest_cache & rmdir /s/q dist"
+clean-all = "pw@ clean & rmdir /s/q .pyprojectx"

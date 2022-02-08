@@ -1,11 +1,12 @@
 import unittest
-import paramiko
 
+import paramiko
 from tornado.httputil import HTTPServerRequest
 from tornado.options import options
-from tests.utils import read_file, make_tests_data_path
+
+from tests.utils import make_tests_data_path, read_file
 from wizardwebssh import handler
-from wizardwebssh.handler import MixinHandler, WsockHandler, PrivateKey, InvalidValueError
+from wizardwebssh.handler import InvalidValueError, MixinHandler, PrivateKey, WsockHandler
 
 try:
     from unittest.mock import Mock

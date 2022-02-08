@@ -1,19 +1,21 @@
 # flake8: noqa
 """Main."""
 import logging
-import tornado.web
+
 import tornado.ioloop
+import tornado.web
 from PyQt6 import QtCore
 from tornado.options import options
+
 from wizardwebssh import handler
-from wizardwebssh.handler import IndexHandler, WsockHandler, NotFoundHandler
+from wizardwebssh.handler import IndexHandler, NotFoundHandler, WsockHandler
 from wizardwebssh.settings import (
+    check_encoding_setting,
     get_app_settings,
     get_host_keys_settings,
     get_policy_setting,
-    get_ssl_context,
     get_server_settings,
-    check_encoding_setting,
+    get_ssl_context,
 )
 
 free_port = "8889"
@@ -28,7 +30,6 @@ if settings.contains("wizardwebsshport"):
     free_port = wizardwebsshport
 else:
     print("wizardwebsshport not found in config")
-    pass
 
 
 def make_handlers(loop, options):

@@ -1,6 +1,7 @@
 import unittest
 
 from tornado.web import Application
+
 from wizardwebssh import handler
 from wizardwebssh.main import app_listen
 

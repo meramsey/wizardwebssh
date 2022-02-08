@@ -1,19 +1,16 @@
 # flake8: noqa
 """Tabbed Terminal Widget"""
-import platform
-import sqlite3
-import threading
-import time
 import os
 import sys
+import threading
+import time
 
 try:
-    from PyQt6 import QtGui, QtWidgets, QtCore
-    from PyQt6.QtCore import pyqtSignal as Signal, pyqtSlot as Slot, Qt
-    from PyQt6.QtCore import QUrl
-    from PyQt6.QtGui import QIcon, QPalette, QColor
+    from PyQt6 import QtCore, QtGui
+    from PyQt6.QtCore import Qt, QUrl
+    from PyQt6.QtGui import QColor, QIcon, QPalette
     from PyQt6.QtWebEngineWidgets import QWebEngineView
-    from PyQt6.QtWidgets import QTabWidget, QApplication, QInputDialog, QFileDialog, QPushButton, QStyle
+    from PyQt6.QtWidgets import QApplication, QFileDialog, QPushButton, QStyle, QTabWidget
 except Exception as e:
     print(f"Exception: {e}")
 
@@ -40,17 +37,14 @@ try:
         free_port = wizardwebsshport
     else:
         print("wizardwebsshport not found in config")
-        pass
 except Exception as e:
     print(f"Exception : {e}")
-    pass
 
 try:
     ssh_terminal_url = "http://localhost:" + str(free_port)
     print(ssh_terminal_url)
 except Exception as e:
     print(f"Exception : {e}")
-    pass
 
 
 class WizardWebssh(object):

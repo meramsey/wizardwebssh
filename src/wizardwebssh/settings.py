@@ -6,13 +6,9 @@ import ssl
 import sys
 
 from tornado.options import define
-from wizardwebssh.policy import load_host_keys, get_policy_class, check_policy_setting
-from wizardwebssh.utils import (
-    to_ip_address,
-    parse_origin_from_url,
-    is_valid_encoding,
-    get_app_version,
-)
+
+from wizardwebssh.policy import check_policy_setting, get_policy_class, load_host_keys
+from wizardwebssh.utils import get_app_version, is_valid_encoding, parse_origin_from_url, to_ip_address
 
 version = get_app_version()
 

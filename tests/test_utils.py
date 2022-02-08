@@ -1,15 +1,15 @@
 import unittest
 
 from wizardwebssh.utils import (
-    is_valid_ip_address,
-    is_valid_port,
-    is_valid_hostname,
-    to_str,
-    to_bytes,
-    to_int,
     is_ip_hostname,
     is_same_primary_domain,
+    is_valid_hostname,
+    is_valid_ip_address,
+    is_valid_port,
     parse_origin_from_url,
+    to_bytes,
+    to_int,
+    to_str,
 )
 
 

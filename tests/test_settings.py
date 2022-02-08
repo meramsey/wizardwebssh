@@ -1,27 +1,28 @@
 import io
+import os.path
 import random
 import ssl
 import sys
-import os.path
 import unittest
+
 import paramiko
 import tornado.options as options
 
 from tests.utils import make_tests_data_path
 from wizardwebssh.policy import load_host_keys
 from wizardwebssh.settings import (
-    get_host_keys_settings,
-    get_policy_setting,
     base_dir,
+    check_encoding_setting,
     get_font_filename,
+    get_host_keys_settings,
+    get_origin_setting,
+    get_policy_setting,
     get_ssl_context,
     get_trusted_downstream,
-    get_origin_setting,
     print_version,
-    check_encoding_setting,
+    version,
 )
 from wizardwebssh.utils import UnicodeType
-from wizardwebssh.settings import version
 
 
 class TestSettings(unittest.TestCase):

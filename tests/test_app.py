@@ -3,14 +3,14 @@ import random
 import threading
 from typing import List
 
-import tornado.websocket
 import tornado.gen
-
-from tornado.testing import AsyncHTTPTestCase
+import tornado.websocket
 from tornado.httpclient import HTTPError
 from tornado.options import options
-from tests.sshserver import run_ssh_server, banner, Server
-from tests.utils import encode_multipart_formdata, read_file, make_tests_data_path  # noqa
+from tornado.testing import AsyncHTTPTestCase
+
+from tests.sshserver import Server, banner, run_ssh_server
+from tests.utils import encode_multipart_formdata, make_tests_data_path, read_file  # noqa
 from wizardwebssh import handler
 from wizardwebssh.main import make_app, make_handlers
 from wizardwebssh.settings import get_app_settings, get_server_settings, max_body_size

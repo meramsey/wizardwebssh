@@ -1,6 +1,7 @@
 import mimetypes
 import os.path
 from uuid import uuid4
+
 from wizardwebssh.settings import base_dir
 
 

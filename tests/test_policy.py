@@ -1,16 +1,17 @@
 import os
 import unittest
-import paramiko
-
 from shutil import copyfile
+
+import paramiko
 from paramiko.client import RejectPolicy, WarningPolicy
+
 from tests.utils import make_tests_data_path
 from wizardwebssh.policy import (
     AutoAddPolicy,
+    check_policy_setting,
+    get_policy_class,
     get_policy_dictionary,
     load_host_keys,
-    get_policy_class,
-    check_policy_setting,
 )
 
 
