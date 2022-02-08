@@ -124,14 +124,11 @@ test = "poetry run pytest -c config/pytest.ini tests"
 check-pylint = "pylint src tests docs/macros.py"
 check-black = "black src tests docs/macros.py --check"
 check = "pw@ check-black && pw@ check-pylint && pw@ test"
-check-all = "pw@ check_code_quality && pw@ check_types && pw@ check_docs && pw@ check_safety"
+check-all = "pw@ check_code_quality && pw@ check_types && pw@ check-docs && pw@ check_safety"
 check_types = "poetry run mypy --config-file config/mypy.ini src tests duties.py docs/macros.py"
 check_safety = "poetry export -f requirements.txt --without-hashes | safety check --stdin --full-report"
 check_code_quality = "flake8 --config=config/flake8.ini src tests duties.py docs/macros.py"
-check_docs = """\
-mkdir -p build/coverage
-touch build/coverage/index.html
-mkdocs build -s"""
+check-docs = "poetry run duty check_docs"
 docs = "mkdocs build"
 docs_serve = "mkdocs serve -a 127.0.0.1:8000"
 docs_deploy = "mkdocs gh-deploy"
