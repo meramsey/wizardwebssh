@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [1.8.0](https://github.com/meramsey/wizardwebssh/releases/tag/1.8.0) - 2022-02-08
+
+<small>[Compare with 1.7.5](https://github.com/meramsey/wizardwebssh/compare/1.7.5...1.8.0)</small>
+
+### Bug Fixes
+- commit missing poetry.lock and poetry.toml ([1b2a4ea](https://github.com/meramsey/wizardwebssh/commit/1b2a4ea2e60fd7263b56a206c0c9c1793401f684) by Michael Ramsey).
+
+### Features
+- Setup project to use pyprojectx for stuff in preparation to eventually replace duties. ([1cbd658](https://github.com/meramsey/wizardwebssh/commit/1cbd6583abf09cee549ce77dd1753fb536c6b845) by Michael Ramsey).
+
+
 ## [1.7.5](https://github.com/meramsey/wizardwebssh/releases/tag/1.7.5) - 2022-02-06
 
 <small>[Compare with 1.7.4](https://github.com/meramsey/wizardwebssh/compare/1.7.4...1.7.5)</small>
