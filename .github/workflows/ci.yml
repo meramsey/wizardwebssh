@@ -44,7 +44,7 @@ jobs:
       run: pip install poetry
 
     - name: Set up the cache
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: .poetry_cache
         key: quality-poetry-cache
@@ -88,7 +88,7 @@ jobs:
       run: pip install poetry
 
     - name: Set up the cache
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: .poetry_cache
         key: tests-poetry-cache-${{ matrix.os }}-py${{ matrix.python-version }}
