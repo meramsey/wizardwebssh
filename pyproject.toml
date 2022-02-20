@@ -33,7 +33,7 @@ packages = [ { include = "wizardwebssh", from = "src" } ]
 python = ">=3.6.2,<4.0"
 paramiko = "2.9.2"
 tornado = "6.1"
-tomlkit = "0.9.1"
+tomlkit = "0.10.0"
 PyQt6 = "6.2.3"
 PyQt6-Qt6 = "6.2.3"
 PyQt6-sip = "13.2.1"
