@@ -1049,7 +1049,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-mock"
-version = "4.0.10"
+version = "4.0.11"
 description = "Typing stubs for mock"
 category = "dev"
 optional = false
@@ -1125,7 +1125,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "a1450507eaaa401d1fa9a73c8230e78e7887cdbc7e46d357bbb6daf369fb1015"
+content-hash = "6d1189746366bda90a9c7dafb58e19f9e4007261ec5cb071f6df80cd947adcf9"
 
 [metadata.files]
 ansimarkup = [
@@ -1833,8 +1833,8 @@ types-ipaddress = [
     {file = "types_ipaddress-1.0.8-py3-none-any.whl", hash = "sha256:4933b74da157ba877b1a705d64f6fa7742745e9ffd65e51011f370c11ebedb55"},
 ]
 types-mock = [
-    {file = "types-mock-4.0.10.tar.gz", hash = "sha256:b4ffe5273f8139f3b2392936677f68d96d36a25beafe23d7a18912d9992609f9"},
-    {file = "types_mock-4.0.10-py3-none-any.whl", hash = "sha256:b99cf0ab18dc28ebab2733b6791864dd9a4fb1d8d285213432a537ccaed34601"},
+    {file = "types-mock-4.0.11.tar.gz", hash = "sha256:1d87d4d9d4dfda7bf77029b60f79fe0aef75d5d519169dccb742f8446213dcbd"},
+    {file = "types_mock-4.0.11-py3-none-any.whl", hash = "sha256:c670c4c1700ee0cee50d25a68b55de7ef1f3758711de43228f04e278ec827ecc"},
 ]
 types-paramiko = [
     {file = "types-paramiko-2.8.13.tar.gz", hash = "sha256:97a286a7db318aa1aafc6548effc7507ae5f242cec84f56dfeb50fea20ee6576"},
