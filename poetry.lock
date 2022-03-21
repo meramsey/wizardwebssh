@@ -748,7 +748,7 @@ PyQt6-sip = ">=13.2,<14"
 
 [[package]]
 name = "pyqt6-qt6"
-version = "6.2.3"
+version = "6.2.4"
 description = "The subset of a Qt installation needed by PyQt6."
 category = "main"
 optional = false
@@ -1125,7 +1125,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "fbdd66afbc01f3eaab66170dcbbbf282d352e2c92fc6ab81a91c557261de5c6b"
+content-hash = "2c15b4bb229239d08276db1924c68f597b231d8359ff3fbb3b23c356efc71526"
 
 [metadata.files]
 ansimarkup = [
@@ -1611,10 +1611,10 @@ pyqt6 = [
     {file = "PyQt6-6.2.3.tar.gz", hash = "sha256:a9bfcac198fe4b703706f809bb686c7cef5f60a7c802fc145c6b57929c7a6a34"},
 ]
 pyqt6-qt6 = [
-    {file = "PyQt6_Qt6-6.2.3-py3-none-macosx_10_14_x86_64.whl", hash = "sha256:02c1f02c04cfac8affb66fc56cbf1d033fb36efee98dd40ba59e60c816018302"},
-    {file = "PyQt6_Qt6-6.2.3-py3-none-macosx_11_0_arm64.whl", hash = "sha256:bdf799911f004f904b00b9424e590cdb9138e7fc687d036c73c458e4c6c2efbd"},
-    {file = "PyQt6_Qt6-6.2.3-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:7d6f37204714bf3a6686f4d32bddd8b13d7e1adec3039cd2d27901bb827d7610"},
-    {file = "PyQt6_Qt6-6.2.3-py3-none-win_amd64.whl", hash = "sha256:6c7fa27a71eb0da81f39ec7a8e2c298d5e2dfecbc923875dcc932478b3c50ef3"},
+    {file = "PyQt6_Qt6-6.2.4-py3-none-macosx_10_14_x86_64.whl", hash = "sha256:48bc5b7400d6bca13d8c0a145f82295a6da317952ee1a3f107f1cd7d078c8140"},
+    {file = "PyQt6_Qt6-6.2.4-py3-none-macosx_11_0_arm64.whl", hash = "sha256:0aa93581b92e01deaf2dcaad88ed6718996a6d84de59ee88316bcba143f008c9"},
+    {file = "PyQt6_Qt6-6.2.4-py3-none-manylinux_2_28_x86_64.whl", hash = "sha256:b68543e5d5a4f5d24c26b517569da3cd30b0fbe75390b841e142c160399b3c0a"},
+    {file = "PyQt6_Qt6-6.2.4-py3-none-win_amd64.whl", hash = "sha256:42c37475a50ec7e06e0445ac9ce39465f69a86af407ad9b28b183da178d401ee"},
 ]
 pyqt6-sip = [
     {file = "PyQt6_sip-13.2.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:226e9e349aa16dc1132f106ca01fa99cf7cb8e59daee29304c2fea5fa33212ec"},
