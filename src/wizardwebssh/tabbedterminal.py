@@ -6,11 +6,11 @@ import threading
 import time
 
 try:
-    from PyQt6 import QtCore, QtGui
-    from PyQt6.QtCore import Qt, QUrl
-    from PyQt6.QtGui import QColor, QIcon, QPalette
-    from PyQt6.QtWebEngineWidgets import QWebEngineView
-    from PyQt6.QtWidgets import QApplication, QFileDialog, QPushButton, QStyle, QTabWidget
+    from PyQt5 import QtCore, QtGui
+    from PyQt5.QtCore import Qt, QUrl
+    from PyQt5.QtGui import QColor, QIcon, QPalette
+    from PyQt5.QtWebEngineWidgets import QWebEngineView
+    from PyQt5.QtWidgets import QApplication, QFileDialog, QPushButton, QStyle, QTabWidget
 except Exception as e:
     print(f"Exception: {e}")
 

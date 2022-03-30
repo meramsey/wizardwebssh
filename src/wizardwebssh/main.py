@@ -4,7 +4,7 @@ import logging
 
 import tornado.ioloop
 import tornado.web
-from PyQt6 import QtCore
+from PyQt5 import QtCore
 from tornado.options import options
 
 from wizardwebssh import handler

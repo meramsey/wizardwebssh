@@ -23,9 +23,9 @@ from tornado.options import options
 from tornado.process import cpu_count
 
 try:
-    from PyQt6 import QtCore
-    from PyQt6.QtCore import QStandardPaths
-    from PyQt6.QtSql import QSqlDatabase, QSqlQuery
+    from PyQt5 import QtCore
+    from PyQt5.QtCore import QStandardPaths
+    from PyQt5.QtSql import QSqlDatabase, QSqlQuery
 except ImportError:
     pass
 from wizardwebssh.utils import (
