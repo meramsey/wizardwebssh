@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [1.9.0](https://github.com/meramsey/wizardwebssh/releases/tag/1.9.0) - 2022-03-31
+
+<small>[Compare with 1.8.0](https://github.com/meramsey/wizardwebssh/compare/1.8.0...1.9.0)</small>
+
+### Bug Fixes
+- switch palette colors from pyqt6 to pyqt5 enums ([7cfb558](https://github.com/meramsey/wizardwebssh/commit/7cfb558b7033471e45d6559bdcfc2f5eeea205f4) by Michael Ramsey).
+- update dependency tomlkit to v0.10.0 ([15c96e8](https://github.com/meramsey/wizardwebssh/commit/15c96e87b3e182226767170fc043abf25c0c4e59) by Renovate Bot).
+- fix mkdocs error upon pw build by changing check_docs to check-docs ([b0dda3c](https://github.com/meramsey/wizardwebssh/commit/b0dda3cf7a7b1015aec973d7b89e706116ec371d) by Michael Ramsey).
+- pinned dependencies that were missing ([d40f113](https://github.com/meramsey/wizardwebssh/commit/d40f113343603e1c27d6c3ad6999bb48f388c088) by Michael Ramsey).
+- ci errors due to pyqt6 not being an extra now ([cdcd539](https://github.com/meramsey/wizardwebssh/commit/cdcd53975f0392d0e7a17dbd0e669b711dc1fd00) by Michael Ramsey).
+
+### Features
+- downgrade dependencies from pyqt6 to pyqt5 ([75b8169](https://github.com/meramsey/wizardwebssh/commit/75b8169d32b0f3dfa6418100455536df8ebc0bd4) by Michael Ramsey).
+
+
 ## [1.8.0](https://github.com/meramsey/wizardwebssh/releases/tag/1.8.0) - 2022-02-08
 
 <small>[Compare with 1.7.5](https://github.com/meramsey/wizardwebssh/compare/1.7.5...1.8.0)</small>
