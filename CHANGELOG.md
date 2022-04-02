@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [1.9.1](https://github.com/meramsey/wizardwebssh/releases/tag/1.9.1) - 2022-04-02
+
+<small>[Compare with 1.9.0](https://github.com/meramsey/wizardwebssh/compare/1.9.0...1.9.1)</small>
+
+
 ## [1.9.0](https://github.com/meramsey/wizardwebssh/releases/tag/1.9.0) - 2022-03-31
 
 <small>[Compare with 1.8.0](https://github.com/meramsey/wizardwebssh/compare/1.8.0...1.9.0)</small>

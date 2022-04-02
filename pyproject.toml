@@ -19,7 +19,7 @@ include_trailing_comma = true
 
 [tool.poetry]
 name = "wizardwebssh"
-version = "1.9.0"
+version = "1.9.1"
 description = "Web based ssh client"
 authors = ["Michael Ramsey <mike@hackerdise.me>"]
 license = "MIT License"
