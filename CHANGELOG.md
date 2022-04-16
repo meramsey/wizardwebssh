@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [1.9.2](https://github.com/meramsey/wizardwebssh/releases/tag/1.9.2) - 2022-04-16
+
+<small>[Compare with 1.9.1](https://github.com/meramsey/wizardwebssh/compare/1.9.1...1.9.2)</small>
+
+### Bug Fixes
+- failing to find version when packaged without pyproject.toml ([a6160f6](https://github.com/meramsey/wizardwebssh/commit/a6160f6505123468dd7cb010b472f4b382ce745e) by Michael Ramsey).
+
+
 ## [1.9.1](https://github.com/meramsey/wizardwebssh/releases/tag/1.9.1) - 2022-04-02
 
 <small>[Compare with 1.9.0](https://github.com/meramsey/wizardwebssh/compare/1.9.0...1.9.1)</small>
