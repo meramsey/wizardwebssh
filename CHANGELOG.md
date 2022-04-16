@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [1.9.3](https://github.com/meramsey/wizardwebssh/releases/tag/1.9.3) - 2022-04-16
+
+<small>[Compare with 1.9.2](https://github.com/meramsey/wizardwebssh/compare/1.9.2...1.9.3)</small>
+
+### Code Refactoring
+- move tests folder into src to fix font and path issues ([23c9d66](https://github.com/meramsey/wizardwebssh/commit/23c9d66de4a4a2bc58e13695940a7afba011b809) by Michael Ramsey).
+
+
 ## [1.9.2](https://github.com/meramsey/wizardwebssh/releases/tag/1.9.2) - 2022-04-16
 
 <small>[Compare with 1.9.1](https://github.com/meramsey/wizardwebssh/compare/1.9.1...1.9.2)</small>
