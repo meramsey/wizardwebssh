@@ -23,6 +23,8 @@ from wizardwebssh.settings import (
 )
 from wizardwebssh.utils import UnicodeType
 
+# base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 class TestSettings(unittest.TestCase):
     def test_print_version(self):

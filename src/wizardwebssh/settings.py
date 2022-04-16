@@ -59,8 +59,8 @@ Example: --encoding='utf-8' to solve the problem with some switches&routers""",
 )
 define("version", type=bool, help="Show version information", callback=print_version)
 
-# base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-base_dir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# base_dir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 # print(f'base_dir: {base_dir}')
 font_dirs = ["wizardwebssh", "static", "css", "fonts"]
 max_body_size = 1 * 1024 * 1024
@@ -80,12 +80,12 @@ class Font(object):
 
 def get_app_settings(options):
     settings = dict(
-        template_path=os.path.join(base_dir, "src", "wizardwebssh", "templates"),
-        static_path=os.path.join(base_dir, "src", "wizardwebssh", "static"),
+        template_path=os.path.join(base_dir, "wizardwebssh", "templates"),
+        static_path=os.path.join(base_dir, "wizardwebssh", "static"),
         websocket_ping_interval=options.wpintvl,
         debug=options.debug,
         xsrf_cookies=options.xsrf,
-        font=Font(get_font_filename(options.font, os.path.join(base_dir, "src", *font_dirs)), font_dirs[1:]),
+        font=Font(get_font_filename(options.font, os.path.join(base_dir, *font_dirs)), font_dirs[1:]),
         origin_policy=get_origin_setting(options),
     )
     # print(f'Settings: {settings}')

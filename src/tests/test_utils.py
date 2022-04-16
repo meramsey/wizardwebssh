@@ -13,7 +13,7 @@ from wizardwebssh.utils import (
 )
 
 
-class TestUitls(unittest.TestCase):
+class TestUtils(unittest.TestCase):
     def test_to_str(self):
         b = b"hello"
         u = "hello"
