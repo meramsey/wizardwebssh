@@ -8,9 +8,8 @@ import sys
 from tornado.options import define
 
 from wizardwebssh.policy import check_policy_setting, get_policy_class, load_host_keys
-from wizardwebssh.utils import get_app_version, is_valid_encoding, parse_origin_from_url, to_ip_address
-
-version = get_app_version()
+from wizardwebssh.utils import is_valid_encoding, parse_origin_from_url, to_ip_address
+from importlib_metadata import version
 
 
 def print_version(flag):

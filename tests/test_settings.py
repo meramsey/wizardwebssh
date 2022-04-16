@@ -7,7 +7,7 @@ import unittest
 
 import paramiko
 import tornado.options as options
-
+from importlib_metadata import version
 from tests.utils import make_tests_data_path
 from wizardwebssh.policy import load_host_keys
 from wizardwebssh.settings import (
@@ -20,7 +20,6 @@ from wizardwebssh.settings import (
     get_ssl_context,
     get_trusted_downstream,
     print_version,
-    version,
 )
 from wizardwebssh.utils import UnicodeType
 
@@ -35,7 +34,7 @@ class TestSettings(unittest.TestCase):
 
         with self.assertRaises(SystemExit):
             self.assertEqual(print_version(True), None)
-        self.assertEqual(sys.stdout.getvalue(), version + "\n")
+        self.assertEqual(sys.stdout.getvalue(), str(version) + "\n")
 
         sys.stdout = sys_stdout
 

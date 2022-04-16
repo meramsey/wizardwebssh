@@ -146,22 +146,3 @@ def parse_origin_from_url(url):
         netloc = parsed.netloc
 
     return "{}://{}".format(scheme, netloc)
-
-
-def _get_project_meta():
-    pyproject_path = os.path.join(
-        os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "pyproject.toml"
-    )
-    with open(pyproject_path) as pyproject:
-        file_contents = pyproject.read()
-
-    return tomlkit.parse(file_contents)["tool"]["poetry"]
-
-
-def get_app_version():
-    pkg_meta = _get_project_meta()
-    pkg_name = str(pkg_meta["name"])
-    # The short X.Y version
-    pkg_version = str(pkg_meta["version"])
-
-    return pkg_version
