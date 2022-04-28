@@ -1030,15 +1030,11 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "types-cryptography"
-version = "3.3.15"
+version = "3.3.21"
 description = "Typing stubs for cryptography"
 category = "dev"
 optional = false
 python-versions = "*"
-
-[package.dependencies]
-types-enum34 = "*"
-types-ipaddress = "*"
 
 [[package]]
 name = "types-enum34"
@@ -1134,7 +1130,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.6.2,<4.0"
-content-hash = "10c689151b470c65d3274a61eafffbf66d45796a9b532fd559bba4cbfeb10c96"
+content-hash = "957f04cd9434294a1744351a806c1934046f674ad98cb89e6c1883470bc82adf"
 
 [metadata.files]
 ansimarkup = [
@@ -1862,8 +1858,8 @@ typed-ast = [
     {file = "typed_ast-1.5.2.tar.gz", hash = "sha256:525a2d4088e70a9f75b08b3f87a51acc9cde640e19cc523c7e41aa355564ae27"},
 ]
 types-cryptography = [
-    {file = "types-cryptography-3.3.15.tar.gz", hash = "sha256:a7983a75a7b88a18f88832008f0ef140b8d1097888ec1a0824ec8fb7e105273b"},
-    {file = "types_cryptography-3.3.15-py3-none-any.whl", hash = "sha256:d9b0dd5465d7898d400850e7f35e5518aa93a7e23d3e11757cd81b4777089046"},
+    {file = "types-cryptography-3.3.21.tar.gz", hash = "sha256:ad1b9c63159c009f8676c7e41a4d595dfb96e8c03affa2e693e1617908bb409e"},
+    {file = "types_cryptography-3.3.21-py3-none-any.whl", hash = "sha256:bdeb6dd07280ac724e05f02e0d8ef01fdef729b18bb07d635d64de83171a4e70"},
 ]
 types-enum34 = [
     {file = "types-enum34-1.1.8.tar.gz", hash = "sha256:6f9c769641d06d73a55e11c14d38ac76fcd37eb545ce79cebb6eec9d50a64110"},
