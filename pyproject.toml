@@ -41,7 +41,7 @@ PyQtWebEngine = "5.15.5"
 toml = "0.10.2"
 
 [tool.poetry.dev-dependencies]
-mypy = "0.931"
+mypy = "0.971"
 pytest = "7.0.1"
 pytest-cov = "pytest-cov"
 pytest-randomly = "3.10.3"
