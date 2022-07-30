@@ -37,7 +37,7 @@ paramiko.util.log_to_file(make_tests_data_path("sshserver.log"))
 host_key = paramiko.RSAKey(filename=make_tests_data_path("test_rsa.key"))
 # host_key = paramiko.DSSKey(filename='test_dss.key')
 
-print("Read key: " + u(hexlify(host_key.get_fingerprint())))
+print(f"Read key: {u(hexlify(host_key.get_fingerprint()))}")
 
 banner = "\r\n\u6b22\u8fce\r\n"
 event_timeout = 5
@@ -68,7 +68,7 @@ class Server(paramiko.ServerInterface):
         n = len(self.commands)
         while len(encodings) < n:
             encodings.append(random.choice(self.encodings))
-        return dict(zip(self.commands, encodings[0:n]))
+        return dict(zip(self.commands, encodings[:n]))
 
     def check_channel_request(self, kind, chanid):
         if kind == "session":
@@ -101,24 +101,22 @@ class Server(paramiko.ServerInterface):
         return paramiko.AUTH_FAILED
 
     def check_auth_interactive_response(self, responses):
-        if self.username in ["pass2fa", "pkey2fa"]:
-            if not self.password_verified:
-                if responses[0] == "password":
-                    print("password verified")
-                    self.password_verified = True
-                    if self.username == "pkey2fa":
-                        return self.check_auth_interactive(self.username, "")
-                else:
-                    print("wrong password: {}".format(responses[0]))
-                    return paramiko.AUTH_FAILED
+        if self.username not in ["pass2fa", "pkey2fa"]:
+            return paramiko.AUTH_FAILED
+        if self.password_verified:
+            if responses[0] == "passcode":
+                print("totp verified")
+                return paramiko.AUTH_SUCCESSFUL
             else:
-                if responses[0] == "passcode":
-                    print("totp verified")
-                    return paramiko.AUTH_SUCCESSFUL
-                else:
-                    print("wrong totp: {}".format(responses[0]))
-                    return paramiko.AUTH_FAILED
+                print(f"wrong totp: {responses[0]}")
+                return paramiko.AUTH_FAILED
+        elif responses[0] == "password":
+            print("password verified")
+            self.password_verified = True
+            if self.username == "pkey2fa":
+                return self.check_auth_interactive(self.username, "")
         else:
+            print(f"wrong password: {responses[0]}")
             return paramiko.AUTH_FAILED
 
     def get_allowed_auths(self, username):
@@ -127,10 +125,7 @@ class Server(paramiko.ServerInterface):
         if username == "pass2fa":
             return "keyboard-interactive"
         if username == "pkey2fa":
-            if not self.key_verified:
-                return "publickey"
-            else:
-                return "keyboard-interactive"
+            return "keyboard-interactive" if self.key_verified else "publickey"
         return "password,publickey"
 
     def check_channel_exec_request(self, channel, command):
@@ -184,7 +179,7 @@ def run_ssh_server(port=2200, running=True, encodings=[]):
             continue
 
         username = t.get_username()
-        print("{} Authenticated!".format(username))
+        print(f"{username} Authenticated!")
 
         server.shell_event.wait(timeout=event_timeout)
         if not server.shell_event.is_set():

@@ -98,8 +98,7 @@ class TestAppBasic(TestAppBase):
         options.hostfile = ""
         options.syshostfile = ""
         options.tdstream = ""
-        app = make_app(make_handlers(loop, options), get_app_settings(options))
-        return app
+        return make_app(make_handlers(loop, options), get_app_settings(options))
 
     @classmethod
     def setUpClass(cls):
@@ -169,7 +168,7 @@ class TestAppBasic(TestAppBase):
         self.assertIn(b"Unable to connect to", response.body)
 
     def test_app_with_wrong_credentials(self):
-        response = self.sync_post("/", self.body + "s")
+        response = self.sync_post("/", f"{self.body}s")
         self.assert_status_in("Authentication failed.", json.loads(to_str(response.body)))  # noqa
 
     def test_app_with_correct_credentials(self):
@@ -200,7 +199,7 @@ class TestAppBasic(TestAppBase):
         self.assert_status_none(data)
 
         url = url.replace("http", "ws")
-        ws_url = url + "ws?id=" + data["id"]
+        ws_url = f"{url}ws?id=" + data["id"]
         yield tornado.gen.sleep(handler.DELAY + 0.1)
         ws = yield tornado.websocket.websocket_connect(ws_url)
         msg = yield ws.read_message()
@@ -217,7 +216,7 @@ class TestAppBasic(TestAppBase):
         clients = handler.clients
         handler.clients = {}
         url = url.replace("http", "ws")
-        ws_url = url + "ws?id=" + data["id"]
+        ws_url = f"{url}ws?id=" + data["id"]
         ws = yield tornado.websocket.websocket_connect(ws_url)
         msg = yield ws.read_message()
         self.assertIsNone(msg)
@@ -232,7 +231,7 @@ class TestAppBasic(TestAppBase):
         self.assert_status_none(data)
 
         url = url.replace("http", "ws")
-        ws_url = url + "ws?id=" + data["id"]
+        ws_url = f"{url}ws?id=" + data["id"]
         ws = yield tornado.websocket.websocket_connect(ws_url)
         msg = yield ws.read_message()
         self.assertEqual(to_str(msg, data["encoding"]), banner)
@@ -246,7 +245,7 @@ class TestAppBasic(TestAppBase):
         self.assert_status_none(data)
 
         url = url.replace("http", "ws")
-        ws_url = url + "ws"
+        ws_url = f"{url}ws"
         ws = yield tornado.websocket.websocket_connect(ws_url)
         msg = yield ws.read_message()
         self.assertIsNone(msg)
@@ -260,7 +259,7 @@ class TestAppBasic(TestAppBase):
         self.assert_status_none(data)
 
         url = url.replace("http", "ws")
-        ws_url = url + "ws?id="
+        ws_url = f"{url}ws?id="
         ws = yield tornado.websocket.websocket_connect(ws_url)
         msg = yield ws.read_message()
         self.assertIsNone(msg)
@@ -274,7 +273,7 @@ class TestAppBasic(TestAppBase):
         self.assert_status_none(data)
 
         url = url.replace("http", "ws")
-        ws_url = url + "ws?id=1" + data["id"]
+        ws_url = f"{url}ws?id=1" + data["id"]
         ws = yield tornado.websocket.websocket_connect(ws_url)
         msg = yield ws.read_message()
         self.assertIsNone(msg)
@@ -289,7 +288,7 @@ class TestAppBasic(TestAppBase):
         self.assert_status_none(data)
 
         url = url.replace("http", "ws")
-        ws_url = url + "ws?id=" + data["id"]
+        ws_url = f"{url}ws?id=" + data["id"]
         ws = yield tornado.websocket.websocket_connect(ws_url)
         msg = yield ws.read_message()
         self.assertEqual(to_str(msg, data["encoding"]), banner)
@@ -333,7 +332,7 @@ class TestAppBasic(TestAppBase):
         self.assert_status_none(data)
 
         url = url.replace("http", "ws")
-        ws_url = url + "ws?id=" + data["id"]
+        ws_url = f"{url}ws?id=" + data["id"]
         ws = yield tornado.websocket.websocket_connect(ws_url)
         msg = yield ws.read_message()
         self.assertEqual(to_str(msg, data["encoding"]), banner)
@@ -351,7 +350,7 @@ class TestAppBasic(TestAppBase):
         self.assert_status_none(data)
 
         url = url.replace("http", "ws")
-        ws_url = url + "ws?id=" + data["id"]
+        ws_url = f"{url}ws?id=" + data["id"]
         ws = yield tornado.websocket.websocket_connect(ws_url)
         msg = yield ws.read_message()
         self.assertEqual(to_str(msg, data["encoding"]), banner)
@@ -416,7 +415,7 @@ class TestAppBasic(TestAppBase):
 
     def test_app_post_form_with_large_body_size_by_urlencoded_form(self):
         privatekey = "h" * (2 * max_body_size)
-        body = self.body + "&privatekey=" + privatekey
+        body = f"{self.body}&privatekey={privatekey}"
         response = self.sync_post("/", body)
         self.assertIn(response.code, [400, 599])
 
@@ -500,14 +499,13 @@ class OtherTestBase(TestAppBase):
         loop = self.io_loop
         options.debug = self.debug
         options.xsrf = self.xsrf
-        options.policy = self.policy if self.policy else random.choice(["warning", "autoadd"])  # noqa
+        options.policy = self.policy or random.choice(["warning", "autoadd"])
         options.hostfile = self.hostfile
         options.syshostfile = self.syshostfile
         options.tdstream = self.tdstream
         options.maxconn = self.maxconn
         options.origin = self.origin
-        app = make_app(make_handlers(loop, options), get_app_settings(options))
-        return app
+        return make_app(make_handlers(loop, options), get_app_settings(options))
 
     def setUp(self):
         print("=" * 20)
@@ -557,7 +555,7 @@ class TestAppWithLargeBuffer(OtherTestBase):
         self.assert_status_none(data)
 
         url = url.replace("http", "ws")
-        ws_url = url + "ws?id=" + data["id"]
+        ws_url = f"{url}ws?id=" + data["id"]
         ws = yield tornado.websocket.websocket_connect(ws_url)
         msg = yield ws.read_message()
         self.assertEqual(to_str(msg, data["encoding"]), banner)
@@ -584,7 +582,8 @@ class TestAppWithRejectPolicy(OtherTestBase):  # type: ignore
     def test_app_with_hostname_not_in_hostkeys(self):
         response = yield self.async_post("/", self.body)
         data = json.loads(to_str(response.body))
-        message = "Connection to {}:{} is not allowed.".format(self.body["hostname"], self.sshserver_port)  # noqa
+        message = f'Connection to {self.body["hostname"]}:{self.sshserver_port} is not allowed.'
+
         self.assertEqual(message, data["status"])
 
 

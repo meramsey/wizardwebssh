@@ -14,14 +14,13 @@ def load_host_keys(path):
 
 
 def get_policy_dictionary():
-    dic = {
+    return {
         k.lower(): v
         for k, v in vars(paramiko.client).items()
         if type(v) is type
         and issubclass(v, paramiko.client.MissingHostKeyPolicy)
         and v is not paramiko.client.MissingHostKeyPolicy
     }
-    return dic
 
 
 def get_policy_class(policy):
@@ -73,11 +72,11 @@ class AutoAddPolicy(paramiko.client.MissingHostKeyPolicy):
         with self.lock:
             if self.is_missing_host_key(client, hostname, key):
                 keytype = key.get_name()
-                logging.info("Adding {} host key for {}".format(keytype, hostname))
+                logging.info(f"Adding {keytype} host key for {hostname}")
                 client._host_keys._entries.append(paramiko.hostkeys.HostKeyEntry([hostname], key))
 
                 with open(client._host_keys_filename, "a") as f:
-                    f.write("{} {} {}\n".format(hostname, keytype, key.get_base64()))
+                    f.write(f"{hostname} {keytype} {key.get_base64()}\n")
 
 
 paramiko.client.AutoAddPolicy = AutoAddPolicy  # type: ignore

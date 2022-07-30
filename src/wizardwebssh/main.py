@@ -36,11 +36,16 @@ def make_handlers(loop, options):
     host_keys_settings = get_host_keys_settings(options)
     policy = get_policy_setting(options, host_keys_settings)
 
-    handlers = [
-        (r"/", IndexHandler, dict(loop=loop, policy=policy, host_keys_settings=host_keys_settings)),
+    return [
+        (
+            r"/",
+            IndexHandler,
+            dict(
+                loop=loop, policy=policy, host_keys_settings=host_keys_settings
+            ),
+        ),
         (r"/ws", WsockHandler, dict(loop=loop)),
     ]
-    return handlers
 
 
 def make_app(handlers, settings):
@@ -54,8 +59,8 @@ def app_listen(app, free_port, address, server_settings):
         server_type = "http"
     else:
         server_type = "https"
-        handler.redirecting = True if options.redirect else False
-    logging.info("Listening on {}:{} ({})".format(address, free_port, server_type))
+        handler.redirecting = bool(options.redirect)
+    logging.info(f"Listening on {address}:{free_port} ({server_type})")
 
 
 def main():

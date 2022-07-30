@@ -1,5 +1,6 @@
 # flake8: noqa
 """Handler for websocket stuffs."""
+
 import io
 import json
 import logging
@@ -101,7 +102,7 @@ try:
         # there is the key in QSettings
         print("Checking for sshconfig_db location preference in config")
         sshconfig_db = settings.value("sshconfig_db")
-        print("Found sshconfig_db in config:" + sshconfig_db)
+        print(f"Found sshconfig_db in config:{sshconfig_db}")
     else:
         print("sshconfig_db not found in config. Using default")
         sshconfig_db = (
@@ -115,7 +116,10 @@ try:
         # there is the key in QSettings
         print("Checking for sshconfig_db ssh_connection_name preference in config")
         default_ssh_connection_name = settings.value("ssh_connection_name")
-        print("Found default_ssh_connection_name in config:" + default_ssh_connection_name)
+        print(
+            f"Found default_ssh_connection_name in config:{default_ssh_connection_name}"
+        )
+
 
     sshdb = QSqlDatabase.addDatabase("QSQLITE", "SSHCONFIG")
     sshdb.setDatabaseName(str(sshconfig_db))
@@ -203,16 +207,15 @@ def get_query_as_dict(query, database_name):
         # row_values = {}
         q = QSqlQuery(f"{query}", db=database_name)
         rec = q.record()
-        if q.exec():
-            if q.first():
-                for column in range(rec.count()):
-                    # print(column)
-                    field = rec.fieldName(column)
-                    value = q.value(column)
-                    columns_names_mapping[field] = column
-                    row_values[field] = str(value)
-                # print(str(row_values))
-                return row_values
+        if q.exec() and q.first():
+            for column in range(rec.count()):
+                # print(column)
+                field = rec.fieldName(column)
+                value = q.value(column)
+                columns_names_mapping[field] = column
+                row_values[field] = str(value)
+            # print(str(row_values))
+            return row_values
     except Exception as e:
         print(f"Exception: {e}")
     return row_values
@@ -283,16 +286,15 @@ def default_ssh_connection(connection, db=None):
         ssh_config_content = ssh_profile_dict["ssh_config_content"]
 
         # Populate the ssh_private_key variable from sqlite sshconfigdb if its empty and a filename is provided instead
-        if bool(ssh_private_key) is False and bool(ssh_private_key_file):
-            if ssh_config_name == "default":
-                with open(os.path.expanduser(ssh_private_key_file), "r") as f:
-                    ssh_private_key = f.read()  # Read whole file in the file_content string
-                # print(ssh_private_key)
-        else:
-            pass
-
+        if (
+            not bool(ssh_private_key)
+            and bool(ssh_private_key_file)
+            and ssh_config_name == "default"
+        ):
+            with open(os.path.expanduser(ssh_private_key_file), "r") as f:
+                ssh_private_key = f.read()  # Read whole file in the file_content string
         # update default default_ssh_connection_name with new session name
-        if bool(ssh_connection_name) is not False:
+        if bool(ssh_connection_name):
             default_ssh_connection_name = ssh_connection_name
             settings.setValue("ssh_connection_name", str(default_ssh_connection_name))
 
@@ -329,7 +331,7 @@ class SSHClient(paramiko.SSHClient):
             elif prompt.startswith("passcode"):
                 answers.append(self.totp)
             else:
-                raise ValueError("Unknown prompt: {}".format(prompt_))
+                raise ValueError(f"Unknown prompt: {prompt_}")
         return answers
 
     def auth_interactive(self, username, handler):
@@ -353,7 +355,7 @@ class SSHClient(paramiko.SSHClient):
             pass
 
         for key in agent_keys:
-            logging.info("Trying ssh-agent key %s" % hexlify(key.get_fingerprint()))
+            logging.info(f"Trying ssh-agent key {hexlify(key.get_fingerprint())}")
             try:
                 self._transport.auth_publickey(username, key)
                 logging.info("... success!")
@@ -399,11 +401,12 @@ class PrivateKey(object):
         self.privatekey = privatekey
         self.filename = (
             filename
-            if bool(filename) is not False
+            if bool(filename)
             else ssh_private_key_file
-            if bool(ssh_private_key_file) is not False
+            if bool(ssh_private_key_file)
             else print("Unable to find Private key")
         )
+
         self.password = password
         self.check_length()
         self.iostr = io.StringIO(privatekey)
@@ -420,8 +423,7 @@ class PrivateKey(object):
             if line and line.startswith("-----BEGIN ") and line.endswith(" PRIVATE KEY-----"):
                 lst = line.split(" ")
                 if len(lst) == 4:
-                    tag = lst[1]
-                    if tag:
+                    if tag := lst[1]:
                         name = tag_to_name.get(tag)
                         if name:
                             break
@@ -429,10 +431,10 @@ class PrivateKey(object):
 
     def get_specific_pkey(self, name, offset, password):
         self.iostr.seek(offset)
-        logging.debug("Reset offset to {}.".format(offset))
+        logging.debug(f"Reset offset to {offset}.")
 
-        logging.debug("Try parsing it as {} type key".format(name))
-        pkeycls = getattr(paramiko, name + "Key")
+        logging.debug(f"Try parsing it as {name} type key")
+        pkeycls = getattr(paramiko, f"{name}Key")
         pkey = None
 
         try:
@@ -449,7 +451,7 @@ class PrivateKey(object):
         logging.info("Parsing private key {!r}".format(self.filename))
         name, length = self.parse_name(self.iostr, self.tag_to_name)
         if not name:
-            raise InvalidValueError("Invalid key {}.".format(self.filename))
+            raise InvalidValueError(f"Invalid key {self.filename}.")
 
         offset = self.iostr.tell() - length
         password = to_bytes(self.password) if self.password else None
@@ -467,7 +469,7 @@ class PrivateKey(object):
         logging.error(str(self.last_exception))
         msg = "Invalid key"
         if self.password:
-            msg += ' or wrong passphrase "{}" for decrypting it.'.format(self.password)
+            msg += f' or wrong passphrase "{self.password}" for decrypting it.'
         raise InvalidValueError(msg)
 
 
@@ -500,10 +502,10 @@ class MixinHandler(object):
 
         parsed_origin = urlparse(origin)
         netloc = parsed_origin.netloc.lower()
-        logging.debug("netloc: {}".format(netloc))
+        logging.debug(f"netloc: {netloc}")
 
         host = self.request.headers.get("Host")
-        logging.debug("host: {}".format(host))
+        logging.debug(f"host: {host}")
 
         if netloc == host:
             return True
@@ -539,18 +541,18 @@ class MixinHandler(object):
                     return True
 
     def get_redirect_url(self, hostname, port, uri):
-        port = "" if port == 443 else ":%s" % port
-        return "https://{}{}{}".format(hostname, port, uri)
+        port = "" if port == 443 else f":{port}"
+        return f"https://{hostname}{port}{uri}"
 
     def set_default_headers(self):
         for header in self.custom_headers.items():
             self.set_header(*header)
 
     def get_value(self, name):
-        value = self.get_argument(name)
-        if not value:
-            raise InvalidValueError("Missing value {}".format(name))
-        return value
+        if value := self.get_argument(name):
+            return value
+        else:
+            raise InvalidValueError(f"Missing value {name}")
 
     def get_context_addr(self):
         return self.context.address[:2]
@@ -602,10 +604,8 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
 
     def write_error(self, status_code, **kwargs):
         if swallow_http_errors and self.request.method == "POST":
-            exc_info = kwargs.get("exc_info")
-            if exc_info:
-                reason = getattr(exc_info[1], "log_message", None)
-                if reason:
+            if exc_info := kwargs.get("exc_info"):
+                if reason := getattr(exc_info[1], "log_message", None):
                     self._reason = reason
             self.result.update(status=self._reason)
             self.set_status(200)
@@ -623,8 +623,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
 
     def get_privatekey(self):
         name = "privatekey"
-        lst = self.request.files.get(name)
-        if lst:
+        if lst := self.request.files.get(name):
             # multipart form
             filename = lst[0]["filename"]
             data = lst[0]["body"]
@@ -639,7 +638,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
     def get_hostname(self):
         value = self.get_value("hostname")
         if not (is_valid_hostname(value) or is_valid_ip_address(value)):
-            raise InvalidValueError("Invalid hostname: {}".format(value))
+            raise InvalidValueError(f"Invalid hostname: {value}")
         return value
 
     def get_port(self):
@@ -649,15 +648,19 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
 
         port = to_int(value)
         if port is None or not is_valid_port(port):
-            raise InvalidValueError("Invalid port: {}".format(value))
+            raise InvalidValueError(f"Invalid port: {value}")
         return port
 
     def lookup_hostname(self, hostname, port):
-        key = hostname if port == 22 else "[{}]:{}".format(hostname, port)
+        key = hostname if port == 22 else f"[{hostname}]:{port}"
 
-        if self.ssh_client._system_host_keys.lookup(key) is None:
-            if self.ssh_client._host_keys.lookup(key) is None:
-                raise tornado.web.HTTPError(403, "Connection to {}:{} is not allowed.".format(hostname, port))
+        if (
+            self.ssh_client._system_host_keys.lookup(key) is None
+            and self.ssh_client._host_keys.lookup(key) is None
+        ):
+            raise tornado.web.HTTPError(
+                403, f"Connection to {hostname}:{port} is not allowed."
+            )
 
     def get_args(self):
         global priority, ssh_id, ssh_priority, ssh_connection_name, ssh_username, ssh_password, ssh_key_passphrase, ssh_public_key, ssh_private_key, ssh_host, ssh_hostname, ssh_port, ssh_proxy_command, ssh_public_key_file, ssh_private_key_file
@@ -673,29 +676,31 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         password_form = self.get_argument("password", "")
         privatekey_form, filename = (
             self.get_privatekey()
-            if bool(self.get_privatekey()) is not False
+            if bool(self.get_privatekey())
             else ssh_private_key_file
-            if bool(ssh_private_key_file) is not False
+            if bool(ssh_private_key_file)
             else print("Unable to find Private Key file")
         )
+
         passphrase_form = self.get_argument("passphrase", "")
         totp = self.get_argument("totp", "")
 
         # New version which defaults to form for stuff unless its empty(false)
-        hostname = hostname_form if bool(hostname_form) is not False else ssh_hostname
-        port = port_form if bool(port_form) is not False else ssh_port
-        username = username_form if bool(username_form) is not False else ssh_username
-        password = password_form if bool(password_form) is not False else ssh_password
+        hostname = hostname_form if bool(hostname_form) else ssh_hostname
+        port = port_form if bool(port_form) else ssh_port
+        username = username_form if bool(username_form) else ssh_username
+        password = password_form if bool(password_form) else ssh_password
         # privatekey = privatekey_form if bool(privatekey_form) is not False else bytes.decode(ssh_private_key) if bool(
         #    ssh_private_key) is not False else print('No Private key provided')
         privatekey = (
             privatekey_form
-            if bool(privatekey_form) is not False
+            if bool(privatekey_form)
             else ssh_private_key
-            if bool(ssh_private_key) is not False
+            if bool(ssh_private_key)
             else print("No Private key provided")
         )
-        passphrase = passphrase_form if bool(passphrase_form) is not False else ssh_key_passphrase
+
+        passphrase = passphrase_form if bool(passphrase_form) else ssh_key_passphrase
 
         if isinstance(self.policy, paramiko.RejectPolicy):
             self.lookup_hostname(hostname, port)
@@ -731,8 +736,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
             else:
                 data = stdout.read()
                 logging.debug("{!r} => {!r}".format(command, data))
-                result = self.parse_encoding(data)
-                if result:
+                if result := self.parse_encoding(data):
                     return result
 
         logging.warning("Could not detect the default encoding.")
@@ -765,15 +769,13 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         logging.info(f"Channel to channel: {chan} ")
         chan.setblocking(0)
         worker = Worker(self.loop, ssh, chan, dst_addr)
-        worker.encoding = options.encoding if options.encoding else self.get_default_encoding(ssh)
+        worker.encoding = options.encoding or self.get_default_encoding(ssh)
         return worker
 
     def check_origin(self):
         event_origin = self.get_argument("_origin", "")
         header_origin = self.request.headers.get("Origin")
-        origin = event_origin or header_origin
-
-        if origin:
+        if origin := event_origin or header_origin:
             if not super(IndexHandler, self).check_origin(origin):
                 raise tornado.web.HTTPError(403, "Cross origin operation is not allowed.")
 
@@ -841,8 +843,7 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
         except (tornado.web.MissingArgumentError, InvalidValueError) as exc:
             self.close(reason=str(exc))
         else:
-            worker = workers.get(worker_id)
-            if worker:
+            if worker := workers.get(worker_id):
                 workers[worker_id] = None
                 self.set_nodelay(True)
                 worker.set_handler(self)
