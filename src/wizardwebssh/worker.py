@@ -27,7 +27,7 @@ def clear_worker(worker, clients):
 def recycle_worker(worker):
     if worker.handler:
         return
-    logging.warning("Recycling worker {}".format(worker.id))
+    logging.warning(f"Recycling worker {worker.id}")
     worker.close(reason="worker recycled")
 
 
@@ -38,7 +38,7 @@ class Worker(object):
         self.chan = chan
         self.dst_addr = dst_addr
         self.fd = chan.fileno()
-        self.id = str(id(self))
+        self.id = id(self)
         self.data_to_dst = []
         self.handler = None
         self.mode = IOLoop.READ
@@ -64,7 +64,7 @@ class Worker(object):
             self.loop.call_later(0.1, self, self.fd, IOLoop.WRITE)
 
     def on_read(self):
-        logging.debug("worker {} on read".format(self.id))
+        logging.debug(f"worker {self.id} on read")
         try:
             data = self.chan.recv(BUF_SIZE)
         except (OSError, IOError) as e:
@@ -84,7 +84,7 @@ class Worker(object):
                 self.close(reason="websocket closed")
 
     def on_write(self):
-        logging.debug("worker {} on write".format(self.id))
+        logging.debug(f"worker {self.id} on write")
         if not self.data_to_dst:
             return
 
@@ -101,8 +101,7 @@ class Worker(object):
                 self.update_handler(IOLoop.WRITE)
         else:
             self.data_to_dst = []
-            data = data[sent:]
-            if data:
+            if data := data[sent:]:
                 self.data_to_dst.append(data)
                 self.update_handler(IOLoop.WRITE)
             else:
@@ -113,7 +112,7 @@ class Worker(object):
             return
         self.closed = True
 
-        logging.info("Closing worker {} with reason: {}".format(self.id, reason))
+        logging.info(f"Closing worker {self.id} with reason: {reason}")
         if self.handler:
             self.loop.remove_handler(self.fd)
             self.handler.close(reason=reason)

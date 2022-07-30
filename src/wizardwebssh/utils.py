@@ -21,15 +21,11 @@ allowed = re.compile(r"(?!-)[a-z0-9-]{1,63}(?<!-)$", re.IGNORECASE)
 
 
 def to_str(bstr, encoding="utf-8"):
-    if isinstance(bstr, bytes):
-        return bstr.decode(encoding)
-    return bstr
+    return bstr.decode(encoding) if isinstance(bstr, bytes) else bstr
 
 
 def to_bytes(ustr, encoding="utf-8"):
-    if isinstance(ustr, UnicodeType):
-        return ustr.encode(encoding)
-    return ustr
+    return ustr.encode(encoding) if isinstance(ustr, UnicodeType) else ustr
 
 
 def to_int(string):
@@ -70,10 +66,7 @@ def is_ip_hostname(hostname):
     it = iter(hostname)
     if next(it) == "[":
         return True
-    for ch in it:
-        if ch != "." and not ch.isdigit():
-            return False
-    return True
+    return not any(ch != "." and not ch.isdigit() for ch in it)
 
 
 def is_valid_hostname(hostname):
@@ -103,14 +96,13 @@ def is_same_primary_domain(domain1, domain2):
         c1 = domain1[i]
         c2 = domain2[i]
 
-        if c1 == c2:
-            if c1 == ".":
-                dots += 1
-                if dots == 2:
-                    return True
-        else:
+        if c1 != c2:
             return False
 
+        if c1 == ".":
+            dots += 1
+            if dots == 2:
+                return True
         i -= 1
 
     if l1 == l2:
@@ -129,7 +121,7 @@ def parse_origin_from_url(url):
         return
 
     if not (url.startswith("http://") or url.startswith("https://") or url.startswith("//")):
-        url = "//" + url
+        url = f"//{url}"
 
     parsed = urlparse(url)
     port = parsed.port
@@ -145,4 +137,4 @@ def parse_origin_from_url(url):
     else:
         netloc = parsed.netloc
 
-    return "{}://{}".format(scheme, netloc)
+    return f"{scheme}://{netloc}"

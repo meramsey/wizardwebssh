@@ -145,7 +145,7 @@ class TestPrivateKey(unittest.TestCase):
         pk = PrivateKey(key, filename=fname)
         with self.assertRaises(InvalidValueError) as ctx:
             pk.get_pkey_obj()
-        self.assertIn("Invalid key {}".format(fname), str(ctx.exception))
+        self.assertIn(f"Invalid key {fname}", str(ctx.exception))
 
     def test_get_pkey_obj_with_plain_rsa_key(self):
         pk = self.get_pk_obj("test_rsa.key")
@@ -201,7 +201,7 @@ class TestPrivateKey(unittest.TestCase):
         self.assertIsNone(name)
 
         for tag, to_name in PrivateKey.tag_to_name.items():
-            key = "-----BEGIN {} PRIVATE KEY----- \r\n".format(tag)
+            key = f"-----BEGIN {tag} PRIVATE KEY----- \r\n"
             pk = PrivateKey(key)
             name, length = pk.parse_name(pk.iostr, pk.tag_to_name)
             self.assertEqual(name, to_name)

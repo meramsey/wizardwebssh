@@ -1,5 +1,6 @@
 # flake8: noqa
 """Tabbed Terminal Widget"""
+
 import os
 import sys
 import threading
@@ -41,7 +42,7 @@ except Exception as e:
     print(f"Exception : {e}")
 
 try:
-    ssh_terminal_url = "http://localhost:" + str(free_port)
+    ssh_terminal_url = f"http://localhost:{str(free_port)}"
     print(ssh_terminal_url)
 except Exception as e:
     print(f"Exception : {e}")

@@ -34,8 +34,7 @@ def latest(lines: List[str], regex: Pattern) -> Optional[str]:
         The last version.
     """
     for line in lines:
-        match = regex.search(line)
-        if match:
+        if match := regex.search(line):
             return match.groupdict()["version"]
     return None
 
@@ -51,10 +50,14 @@ def unreleased(versions: List[Version], last_release: str) -> List[Version]:
     Returns:
         A list of versions.
     """
-    for index, version in enumerate(versions):
-        if version.tag == last_release:
-            return versions[:index]
-    return versions
+    return next(
+        (
+            versions[:index]
+            for index, version in enumerate(versions)
+            if version.tag == last_release
+        ),
+        versions,
+    )
 
 
 def read_changelog(filepath: str) -> List[str]:
@@ -113,8 +116,7 @@ def update_changelog(
             last_version.compare_url = last_version.compare_url.replace("HEAD", planned_tag)
 
     lines = read_changelog(inplace_file)
-    last_released = latest(lines, re.compile(version_regex))
-    if last_released:
+    if last_released := latest(lines, re.compile(version_regex)):
         changelog.versions_list = unreleased(changelog.versions_list, last_released)
     rendered = template.render(changelog=changelog, inplace=True)
     lines[lines.index(marker)] = rendered

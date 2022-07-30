@@ -12,7 +12,7 @@ class TestMain(unittest.TestCase):
         app.listen = lambda x, y, **kwargs: 1
 
         handler.redirecting = None
-        server_settings = dict()
+        server_settings = {}
         app_listen(app, 80, "127.0.0.1", server_settings)
         self.assertFalse(handler.redirecting)
 

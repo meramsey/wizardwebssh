@@ -15,21 +15,31 @@ def encode_multipart_formdata(fields, files):
     boundary = uuid4().hex
     CRLF = "\r\n"
     L = []
-    for (key, value) in fields:
-        L.append("--" + boundary)
-        L.append('Content-Disposition: form-data; name="%s"' % key)
-        L.append("")
-        L.append(value)
-    for (key, filename, value) in files:
-        L.append("--" + boundary)
-        L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
-        L.append("Content-Type: %s" % get_content_type(filename))
-        L.append("")
-        L.append(value)
-    L.append("--" + boundary + "--")
-    L.append("")
+    for key, value in fields:
+        L.extend(
+            (
+                f"--{boundary}",
+                'Content-Disposition: form-data; name="%s"' % key,
+                "",
+                value,
+            )
+        )
+
+    for key, filename, value in files:
+        L.extend(
+            (
+                f"--{boundary}",
+                'Content-Disposition: form-data; name="%s"; filename="%s"'
+                % (key, filename),
+                f"Content-Type: {get_content_type(filename)}",
+                "",
+                value,
+            )
+        )
+
+    L.extend((f"--{boundary}--", ""))
     body = CRLF.join(L)
-    content_type = "multipart/form-data; boundary=%s" % boundary
+    content_type = f"multipart/form-data; boundary={boundary}"
     return content_type, body
 
 
@@ -40,9 +50,7 @@ def get_content_type(filename):
 def read_file(path, encoding="utf-8"):
     with open(path, "rb") as f:
         data = f.read()
-        if encoding is None:
-            return data
-        return data.decode(encoding)
+        return data if encoding is None else data.decode(encoding)
 
 
 def make_tests_data_path(filename):

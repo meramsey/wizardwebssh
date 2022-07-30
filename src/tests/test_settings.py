@@ -130,11 +130,11 @@ class TestSettings(unittest.TestCase):
         self.assertEqual(get_trusted_downstream(tdstream), result)
 
         tdstream = "1.1.1.1, 2.2.2.2"
-        result = set(["1.1.1.1", "2.2.2.2"])
+        result = {"1.1.1.1", "2.2.2.2"}
         self.assertEqual(get_trusted_downstream(tdstream), result)
 
         tdstream = "1.1.1.1, 2.2.2.2, 2.2.2.2"
-        result = set(["1.1.1.1", "2.2.2.2"])
+        result = {"1.1.1.1", "2.2.2.2"}
         self.assertEqual(get_trusted_downstream(tdstream), result)
 
         tdstream = "1.1.1.1, 2.2.2."

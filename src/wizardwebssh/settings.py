@@ -79,43 +79,43 @@ class Font(object):
 
 
 def get_app_settings(options):
-    settings = dict(
+    # print(f'Settings: {settings}')
+    return dict(
         template_path=os.path.join(base_dir, "wizardwebssh", "templates"),
         static_path=os.path.join(base_dir, "wizardwebssh", "static"),
         websocket_ping_interval=options.wpintvl,
         debug=options.debug,
         xsrf_cookies=options.xsrf,
-        font=Font(get_font_filename(options.font, os.path.join(base_dir, *font_dirs)), font_dirs[1:]),
+        font=Font(
+            get_font_filename(
+                options.font, os.path.join(base_dir, *font_dirs)
+            ),
+            font_dirs[1:],
+        ),
         origin_policy=get_origin_setting(options),
     )
-    # print(f'Settings: {settings}')
-    return settings
 
 
 def get_server_settings(options):
-    settings = dict(
+    return dict(
         xheaders=options.xheaders,
         max_body_size=max_body_size,
         trusted_downstream=get_trusted_downstream(options.tdstream),
     )
-    return settings
 
 
 def get_host_keys_settings(options):
-    if not options.hostfile:
-        host_keys_filename = os.path.join(base_dir, "known_hosts")
-    else:
-        host_keys_filename = options.hostfile
+    host_keys_filename = options.hostfile or os.path.join(base_dir, "known_hosts")
     host_keys = load_host_keys(host_keys_filename)
 
-    if not options.syshostfile:
-        filename = os.path.expanduser("~/.ssh/known_hosts")
-    else:
-        filename = options.syshostfile
+    filename = options.syshostfile or os.path.expanduser("~/.ssh/known_hosts")
     system_host_keys = load_host_keys(filename)
 
-    settings = dict(host_keys=host_keys, system_host_keys=system_host_keys, host_keys_filename=host_keys_filename)
-    return settings
+    return dict(
+        host_keys=host_keys,
+        system_host_keys=system_host_keys,
+        host_keys_filename=host_keys_filename,
+    )
 
 
 def get_policy_setting(options, host_keys_settings):
@@ -145,8 +145,7 @@ def get_ssl_context(options):
 def get_trusted_downstream(tdstream):
     result = set()
     for ip in tdstream.split(","):
-        ip = ip.strip()
-        if ip:
+        if ip := ip.strip():
             to_ip_address(ip)
             result.add(ip)
     return result
@@ -154,19 +153,18 @@ def get_trusted_downstream(tdstream):
 
 def get_origin_setting(options):
     if options.origin == "*":
-        if not options.debug:
-            raise ValueError("Wildcard origin policy is only allowed in debug mode.")
-        else:
+        if options.debug:
             return "*"
 
+        else:
+            raise ValueError("Wildcard origin policy is only allowed in debug mode.")
     origin = options.origin.lower()
     if origin in ["same", "primary"]:
         return origin
 
     origins = set()
     for url in origin.split(","):
-        orig = parse_origin_from_url(url)
-        if orig:
+        if orig := parse_origin_from_url(url):
             origins.add(orig)
 
     if not origins:
